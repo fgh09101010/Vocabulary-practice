@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>極致單字卡 Pro</title>
+    <title>極致單字卡</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
@@ -18,6 +18,7 @@
             --card-bg: rgba(255, 255, 255, 0.85);
             --text-main: #1F2937;
             --text-muted: #6B7280;
+            --ai-bg: #EEF2FF;
         }
 
         body {
@@ -31,27 +32,15 @@
             color: var(--text-main);
         }
 
-        .app-container {
-            width: 100%;
-            max-width: 480px;
-            padding: 20px;
-            box-sizing: border-box;
-        }
+        .app-container { width: 100%; max-width: 480px; padding: 20px; box-sizing: border-box; }
 
-        /* 毛玻璃卡片風格 */
         .glass-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-radius: 24px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            padding: 30px 25px;
-            text-align: center;
-            transition: all 0.3s ease;
+            background: var(--card-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border-radius: 24px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.5); padding: 30px 25px;
+            text-align: center; transition: all 0.3s ease;
         }
 
-        /* 設定區塊 */
         .setup-area { display: block; }
         .practice-area { display: none; animation: fadeIn 0.5s ease; }
 
@@ -60,168 +49,51 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        h1 {
-            font-size: 24px;
-            margin-bottom: 25px;
-            color: var(--primary);
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-
-        .input-group label {
-            display: block;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--text-muted);
-        }
+        h1 { font-size: 24px; margin-bottom: 25px; color: var(--primary); }
+        .input-group { margin-bottom: 20px; text-align: left; }
+        .input-group label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--text-muted); }
 
         select {
-            width: 100%;
-            padding: 14px;
-            font-size: 16px;
-            border-radius: 12px;
-            border: 2px solid #E5E7EB;
-            background-color: white;
-            outline: none;
-            transition: border-color 0.2s;
-            font-family: inherit;
+            width: 100%; padding: 14px; font-size: 16px; border-radius: 12px;
+            border: 2px solid #E5E7EB; background-color: white; outline: none; font-family: inherit;
         }
+        select optgroup { font-size: 14px; color: #6B7280; background: #F3F4F6; font-weight: bold; }
 
-        select:focus { border-color: var(--primary); }
-
-        /* 按鈕風格 */
         .btn {
-            width: 100%;
-            padding: 16px;
-            font-size: 18px;
-            font-weight: 600;
-            border-radius: 14px;
-            border: none;
-            cursor: pointer;
-            color: white;
-            background: var(--primary);
-            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
-            transition: all 0.2s;
-            font-family: inherit;
+            width: 100%; padding: 16px; font-size: 18px; font-weight: 600; border-radius: 14px;
+            border: none; cursor: pointer; color: white; background: var(--primary);
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3); transition: all 0.2s; font-family: inherit;
         }
-
         .btn:active { transform: scale(0.97); }
-        .btn:hover { background: var(--primary-hover); }
-        
         .btn-reveal { background: var(--primary); margin-top: 20px; }
-        .btn-next { background: var(--secondary); box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); margin-top: 20px; display: none; }
-        .btn-next:hover { background: var(--secondary-hover); }
+        .btn-next { background: var(--secondary); margin-top: 20px; display: none; }
+        .btn-ai { background: #6366F1; margin-top: 15px; }
 
-        /* 單字顯示區 */
-        .word-header {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 15px;
-            margin-bottom: 10px;
-        }
-
-        .word-en {
-            font-size: 42px;
-            font-weight: 700;
-            color: var(--text-main);
-            margin: 0;
-            letter-spacing: 0.5px;
-        }
-
-        .btn-audio {
-            background: #EEF2FF;
-            color: var(--primary);
-            border: none;
-            border-radius: 50%;
-            width: 45px;
-            height: 45px;
-            font-size: 20px;
-            cursor: pointer;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: all 0.2s;
-        }
-
+        .word-header { display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 10px; }
+        .word-en { font-size: 38px; font-weight: 700; margin: 0; }
+        .btn-audio { background: #EEF2FF; color: var(--primary); border: none; border-radius: 50%; width: 45px; height: 45px; font-size: 20px; cursor: pointer; transition: 0.2s; }
         .btn-audio:active { transform: scale(0.9); background: #E0E7FF; }
 
-        .pos-badge {
-            display: inline-block;
-            background: #F3F4F6;
-            color: var(--text-muted);
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 15px;
-            font-weight: 600;
-            margin-bottom: 25px;
-            border: 1px solid #E5E7EB;
-        }
+        .pos-badge { display: inline-block; background: #F3F4F6; color: var(--text-muted); padding: 6px 12px; border-radius: 20px; font-size: 15px; margin-bottom: 15px; border: 1px solid #E5E7EB; }
 
-        /* 詳情區 (預設隱藏) */
-        .details-area {
-            display: none;
-            background: #F9FAFB;
-            border-radius: 16px;
-            padding: 20px;
-            text-align: left;
-            margin-bottom: 20px;
-            border: 1px solid #E5E7EB;
-            animation: fadeIn 0.4s ease;
-        }
+        /* 解答區塊 (包含圖片與詳情)，加上淡入動畫 */
+        .answer-section { display: none; width: 100%; animation: fadeIn 0.4s ease; }
 
-        .details-zh {
-            font-size: 22px;
-            font-weight: 700;
-            color: var(--text-main);
-            margin: 0 0 10px 0;
-        }
+        /* 圖片區域設定 */
+        #imageContainer { margin-bottom: 20px; position: relative; min-height: 120px; width: 100%; }
+        #wordImg { width: 100%; max-height: 220px; object-fit: cover; border-radius: 16px; transition: opacity 0.5s; background: #f3f4f6; opacity: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .img-loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #9CA3AF; font-size: 12px; }
 
-        .details-note {
-            font-size: 16px;
-            color: var(--text-muted);
-            margin: 0;
-            padding-top: 10px;
-            border-top: 1px dashed #D1D5DB;
-            line-height: 1.5;
-        }
+        .details-area { background: #F9FAFB; border-radius: 16px; padding: 20px; text-align: left; margin-bottom: 20px; border: 1px solid #E5E7EB; }
+        .details-zh { font-size: 22px; font-weight: 700; margin: 0 0 10px 0; color: var(--text-main); }
+        .details-note { font-size: 16px; color: var(--text-muted); border-top: 1px dashed #D1D5DB; padding-top: 10px; line-height: 1.5; }
 
-        /* 進度條 */
-        .progress-wrapper {
-            margin-bottom: 25px;
-        }
-
-        .progress-text {
-            font-size: 14px;
-            color: var(--text-muted);
-            font-weight: 600;
-            margin-bottom: 8px;
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .progress-bar-bg {
-            width: 100%;
-            height: 8px;
-            background: #E5E7EB;
-            border-radius: 10px;
-            overflow: hidden;
-        }
-
-        .progress-bar-fill {
-            height: 100%;
-            background: var(--primary);
-            width: 0%;
-            transition: width 0.4s ease;
-            border-radius: 10px;
-        }
+        .progress-wrapper { margin-bottom: 25px; }
+        .progress-bar-bg { width: 100%; height: 8px; background: #E5E7EB; border-radius: 10px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.4s; }
         
-        .finish-screen { display: none; text-align: center; }
-        .finish-icon { font-size: 60px; color: #F59E0B; margin-bottom: 15px; }
+        .finish-screen { display: none; }
+        .ai-prompt-box { background: var(--ai-bg); padding: 15px; border-radius: 12px; margin: 15px 0; font-size: 13px; text-align: left; border: 1px solid #C7D2FE; color: #3730A3; max-height: 100px; overflow-y: auto; word-break: break-all; }
     </style>
 </head>
 <body>
@@ -229,205 +101,228 @@
     <div class="app-container">
         <div class="glass-card setup-area" id="setupArea">
             <h1><i class="fa-solid fa-layer-group"></i> 準備練習</h1>
-            
             <div class="input-group">
                 <label>選擇單字表 (CSV)</label>
                 <select id="csvSelector">
-                    <option value="">-- 請選擇單字表 --</option>
-                    <option value="data/list1.csv">單字表 1</option>
-                    <option value="data/list2.csv">單字表 2</option>
-                    </select>
+                    <!-- <option value="">-- 請選擇單字表 --</option> -->
+                    <option value="data/list1.csv">Ch1 Covid-19</option>
+                </select>
             </div>
-
+            
             <div class="input-group">
-                <label>本次抽題數量</label>
+                <label>本次抽題數量與排序</label>
                 <select id="drawCount">
                     <option value="10" selected>隨機抽 10 題</option>
                     <option value="20">隨機抽 20 題</option>
-                    <option value="50">隨機抽 50 題</option>
-                    <option value="all">全顯示 (全部打亂)</option>
+                    <option value="all_seq">全顯示 (照原檔案順序)</option>
+                    <option value="all_shuffle">全顯示 (並全部打亂)</option>
                 </select>
             </div>
-
             <button class="btn" onclick="startPractice()">開始練習 <i class="fa-solid fa-rocket"></i></button>
         </div>
 
         <div class="glass-card practice-area" id="practiceArea">
-            
             <div class="progress-wrapper">
-                <div class="progress-text">
-                    <span>進度</span>
-                    <span id="progressCount">1 / 10</span>
+                <div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:8px; color:var(--text-muted);">
+                    <span>進度</span><span id="progressCount">0 / 0</span>
                 </div>
-                <div class="progress-bar-bg">
-                    <div class="progress-bar-fill" id="progressBar"></div>
-                </div>
+                <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressBar"></div></div>
             </div>
 
             <div id="cardContent">
                 <div class="word-header">
-                    <h2 class="word-en" id="wordEn">Apple</h2>
+                    <h2 class="word-en" id="wordEn"></h2>
                     <button class="btn-audio" onclick="playAudio()"><i class="fa-solid fa-volume-high"></i></button>
                 </div>
+                <div class="pos-badge" id="wordPos"></div>
                 
-                <div class="pos-badge" id="wordPos">n.</div>
+                <div class="answer-section" id="answerSection">
+                    
+                    <div id="imageContainer">
+                        <div class="img-loading" id="imgStatus"><i class="fa-solid fa-spinner fa-spin"></i> 正在維基百科尋找圖片...</div>
+                        <img id="wordImg" src="">
+                        <div id="imgSource" style="font-size:11px; color:#9CA3AF; text-align:center; margin-top:8px; line-height: 1.5;">
+                            <i class="fa-brands fa-wikipedia-w"></i> 圖片由 Wikipedia 提供<br>
+                            <span style="font-size: 10px;">(圖片為系統自動關聯，不一定和中文意思完全一樣)</span>
+                        </div>
+                    </div>
 
-                <div class="details-area" id="detailsArea">
-                    <p class="details-zh" id="wordZh">蘋果</p>
-                    <p class="details-note" id="wordNote">一天一蘋果，醫生遠離我。</p>
+                    <div class="details-area" id="detailsArea">
+                        <p class="details-zh" id="wordZh"></p>
+                        <p class="details-note" id="wordNote"></p>
+                    </div>
                 </div>
 
-                <button class="btn btn-reveal" id="revealBtn" onclick="revealAnswer()">顯示中文與備註</button>
-                <button class="btn btn-next" id="nextBtn" onclick="nextWord()">下一個 <i class="fa-solid fa-arrow-right"></i></button>
+                <button class="btn btn-reveal" id="revealBtn" onclick="revealAnswer()">顯示解答</button>
+                <button class="btn btn-next" id="nextBtn" onclick="nextWord()">下一個</button>
             </div>
 
             <div class="finish-screen" id="finishScreen">
-                <div class="finish-icon"><i class="fa-solid fa-trophy"></i></div>
-                <h2>太棒了！練習完成</h2>
-                <p style="color: #6B7280; margin-bottom: 20px;">你已經複習完本次的所有單字。</p>
-                <button class="btn" onclick="location.reload()">再練一次 <i class="fa-solid fa-rotate-right"></i></button>
+                <div style="font-size:60px; color:#F59E0B;"><i class="fa-solid fa-trophy"></i></div>
+                <h2>練習完成！</h2>
+                <div class="ai-prompt-box" id="aiPromptBox"></div>
+                <button class="btn btn-ai" onclick="copyAndOpenAI()">複製指令並開啟 ChatGPT</button>
+                <button class="btn" style="background:#6B7280; margin-top:10px;" onclick="location.reload()">回主選單</button>
             </div>
-
         </div>
     </div>
 
     <script>
-        let allWords = [];
         let practiceWords = [];
         let currentIndex = 0;
 
-        // 1. 開始練習：讀取與設定
         function startPractice() {
             const fileUrl = document.getElementById('csvSelector').value;
             const drawCount = document.getElementById('drawCount').value;
-
-            if (!fileUrl) {
-                alert("請先選擇一個單字表！");
-                return;
-            }
-
-            // 按鈕顯示讀取中
-            const btn = document.querySelector('.setup-area .btn');
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> 載入中...';
+            if (!fileUrl) return alert("請選擇單字表");
 
             Papa.parse(fileUrl, {
-                download: true,
-                header: true,
-                skipEmptyLines: true,
+                download: true, header: true, skipEmptyLines: true,
                 complete: function(results) {
-                    allWords = results.data;
+                    let all = results.data;
                     
-                    // 打亂整個單字表
-                    shuffleArray(allWords);
-
-                    // 根據選擇決定題目數量
-                    if (drawCount === 'all') {
-                        practiceWords = allWords;
+                    // 修改1邏輯：判斷全顯示、打亂或是切片
+                    if (drawCount === 'all_seq') {
+                        practiceWords = all;
+                    } else if (drawCount === 'all_shuffle') {
+                        all.sort(() => Math.random() - 0.5);
+                        practiceWords = all;
                     } else {
-                        practiceWords = allWords.slice(0, parseInt(drawCount));
+                        all.sort(() => Math.random() - 0.5);
+                        practiceWords = all.slice(0, parseInt(drawCount));
                     }
 
-                    // 如果 CSV 單字量比抽題數少，做個防呆
-                    if (practiceWords.length === 0) {
-                        alert("檔案裡沒有單字或格式錯誤！");
-                        btn.innerHTML = '開始練習 <i class="fa-solid fa-rocket"></i>';
-                        return;
-                    }
-
-                    // 切換畫面
+                    if (practiceWords.length === 0) return alert("檔案裡沒有單字或格式錯誤！");
+                    
                     document.getElementById('setupArea').style.display = 'none';
                     document.getElementById('practiceArea').style.display = 'block';
-                    
                     currentIndex = 0;
                     renderCard();
                 },
                 error: function(err) {
                     alert("檔案讀取失敗，請確認路徑是否正確。");
-                    btn.innerHTML = '開始練習 <i class="fa-solid fa-rocket"></i>';
                 }
             });
         }
 
-        // 2. 洗牌演算法
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-        }
-
-        // 3. 渲染單字卡
         function renderCard() {
-            const currentWord = practiceWords[currentIndex];
+            const word = practiceWords[currentIndex];
+            const en = word['英文'] || 'Error';
+            const zh = word['中文'] || '無資料';
 
-            // 填入資料 (請確保 CSV 標題為：英文, 詞性, 中文, 備註)
-            document.getElementById('wordEn').textContent = currentWord['英文'] || 'Error';
-            document.getElementById('wordPos').textContent = currentWord['詞性'] || '無詞性';
-            document.getElementById('wordZh').textContent = currentWord['中文'] || '無中文解釋';
-            document.getElementById('wordNote').textContent = currentWord['備註'] || '';
-
-            // 如果沒有備註，隱藏備註分隔線
-            if (!currentWord['備註']) {
-                document.getElementById('wordNote').style.display = 'none';
+            // 填入資料
+            document.getElementById('wordEn').textContent = en;
+            document.getElementById('wordPos').textContent = word['詞性'] || '';
+            document.getElementById('wordZh').textContent = zh;
+            
+            const noteEl = document.getElementById('wordNote');
+            if (word['備註']) {
+                noteEl.style.display = 'block';
+                noteEl.textContent = word['備註'];
             } else {
-                document.getElementById('wordNote').style.display = 'block';
+                noteEl.style.display = 'none';
             }
 
-            // 狀態重置：隱藏詳情、顯示「顯示按鈕」
-            document.getElementById('detailsArea').style.display = 'none';
+            // 重置介面狀態 (隱藏解答區，顯示按鈕)
+            document.getElementById('answerSection').style.display = 'none';
             document.getElementById('revealBtn').style.display = 'block';
             document.getElementById('nextBtn').style.display = 'none';
 
-            // 更新進度條
-            const total = practiceWords.length;
-            const current = currentIndex + 1;
-            document.getElementById('progressCount').textContent = `${current} / ${total}`;
-            document.getElementById('progressBar').style.width = `${(current / total) * 100}%`;
+            // --- 維基百科 (Wikipedia) API 抓圖邏輯 (在背景偷跑) ---
+            const img = document.getElementById('wordImg');
+            const container = document.getElementById('imageContainer');
+            const status = document.getElementById('imgStatus');
+            
+            // 預設將圖片容器打開
+            container.style.display = 'block';
+            img.style.opacity = '0';
+            img.src = ''; // 🌟 新增這行：先清空上一題的舊圖片，避免殘影
+            status.style.display = 'block';
+            
+            const wikiUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(en)}&prop=pageimages&format=json&pithumbsize=600&origin=*`;
 
-            // 自動發音 (依賴手機瀏覽器政策，通常點擊"開始練習"後就允許發音了)
+            fetch(wikiUrl)
+                .then(response => response.json())
+                .then(data => {
+                    const pages = data.query?.pages;
+                    if (!pages) throw new Error("無頁面資料");
+                    const pageId = Object.keys(pages)[0];
+
+                    if (pageId !== "-1" && pages[pageId].thumbnail) {
+                        img.src = pages[pageId].thumbnail.source;
+                        img.onload = () => {
+                            img.style.opacity = '1';
+                            status.style.display = 'none';
+                        };
+                    } else {
+                        container.style.display = 'none'; // 無圖片則隱藏
+                    }
+                })
+                .catch(err => {
+                    container.style.display = 'none'; // 報錯則隱藏
+                });
+            // ------------------------------------------
+
+            // 更新進度條
+            const cur = currentIndex + 1;
+            const total = practiceWords.length;
+            document.getElementById('progressCount').textContent = `${cur} / ${total}`;
+            document.getElementById('progressBar').style.width = `${(cur/total)*100}%`;
+            
             playAudio();
         }
 
-        // 4. 顯示解答
+        // 修改2邏輯：顯示解答時，才打開外層容器 (包含圖片跟文字)
         function revealAnswer() {
-            document.getElementById('detailsArea').style.display = 'block';
+            document.getElementById('answerSection').style.display = 'block';
             document.getElementById('revealBtn').style.display = 'none';
-            
-            // 如果是最後一題，按鈕文字改為「完成」
-            const nextBtn = document.getElementById('nextBtn');
-            nextBtn.style.display = 'block';
-            if (currentIndex === practiceWords.length - 1) {
-                nextBtn.innerHTML = '完成練習 <i class="fa-solid fa-check"></i>';
-            } else {
-                nextBtn.innerHTML = '下一個 <i class="fa-solid fa-arrow-right"></i>';
-            }
+            document.getElementById('nextBtn').style.display = 'block';
+            document.getElementById('nextBtn').innerHTML = (currentIndex === practiceWords.length - 1) ? '完成練習 <i class="fa-solid fa-check"></i>' : '下一個 <i class="fa-solid fa-arrow-right"></i>';
         }
 
-        // 5. 下一個單字
         function nextWord() {
             if (currentIndex < practiceWords.length - 1) {
                 currentIndex++;
                 renderCard();
             } else {
-                // 結束畫面
-                document.getElementById('cardContent').style.display = 'none';
-                document.getElementById('finishScreen').style.display = 'block';
+                showFinish();
             }
         }
 
-        // 6. 語音朗讀 (Web Speech API)
+        function showFinish() {
+            document.getElementById('cardContent').style.display = 'none';
+            document.getElementById('finishScreen').style.display = 'block';
+            
+            // 整理單字與中文意思的對照清單
+            const wordWithZh = practiceWords.map(w => `${w['英文']} (${w['中文'] || '無資料'})`).join(', ');
+            
+            // 🌟 修正：將字串完全靠左，這樣貼到 ChatGPT 才會整齊
+            const customPrompt = `我剛練習完這 ${practiceWords.length} 個英文單字與對應中文：
+[${wordWithZh}]。
+針對這些單字，提供一些幽默的諧音或記憶口訣幫助我長期記憶。`;
+
+            document.getElementById('aiPromptBox').textContent = customPrompt;
+        }
+
+        function copyAndOpenAI() {
+            const prompt = document.getElementById('aiPromptBox').textContent;
+            
+            // 1. 先複製到剪貼簿（當作備份）
+            navigator.clipboard.writeText(prompt);
+
+            // 2. 自動跳轉到帶有指令的網址 (這會讓 ChatGPT 開啟時直接輸入好文字)
+            // 註：這需要瀏覽器權限，且 ChatGPT 介面有時會變動，但這是目前最快的方法
+            const encodedPrompt = encodeURIComponent(prompt);
+            window.open(`https://chatgpt.com/?q=${encodedPrompt}`, '_blank');
+        }
+
         function playAudio() {
-            const text = document.getElementById('wordEn').textContent;
             if ('speechSynthesis' in window) {
-                // 停止當前可能正在播放的聲音
                 window.speechSynthesis.cancel();
-                
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.lang = 'en-US'; // 美式發音
-                utterance.rate = 0.9;     // 語速稍微放慢一點點
-                window.speechSynthesis.speak(utterance);
-            } else {
-                alert("您的瀏覽器不支援語音朗讀功能");
+                const u = new SpeechSynthesisUtterance(document.getElementById('wordEn').textContent);
+                u.lang = 'en-US';
+                u.rate = 0.9;
+                window.speechSynthesis.speak(u);
             }
         }
     </script>

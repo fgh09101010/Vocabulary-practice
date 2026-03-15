@@ -1,20 +1,166 @@
 ﻿英文,詞性,中文,備註
 pandemic,n,流行病,(n) a disease that exists in almost all of an area
-pandemic,a,流行的,(a) (of a disease) existing in almost all of an area
+pandemic,a,流行的,"(a) (of a disease) existing in almost all of an area
+Ex: In some parts of the world malaria is still pandemic.
+例如：在世界某些地區，瘧疾仍然流行。"
 coronavirus,n,冠狀病毒,"(n) a type of virus that causes diseases in humans and animals. In humans, it usually causes 
 respiratory infections (= in the nose, throat, or chest) that are not serious
-Ex: SARS was a new strain of coronavirus."
+Ex: SARS was a new strain of coronavirus.
+例如：SARS是冠狀病毒的一種新株。"
 corona,n,"（身體組織）冠，冠狀
-部","(n) the top rounded part of a body part such as a tooth or the skull,"
+部","(n) the top rounded part of a body part such as a tooth or the skull,
+"
 viral,a,病毒的,"(a) caused by a virus, 
-Ex: Within days the film clip went viral"
+Ex: Within days the film clip went viral
+例如：幾天之內，這段影片就迅速走紅。"
 pneumonia,n,肺炎,"(n) a serious illness in which one or both lungs become inflamed and fill with fluid, 
-Ex: The doctor checked whether the patient had pneumonia."
+Ex: The doctor checked whether the patient had pneumonia.
+例如：醫生檢查了病人是否有肺炎。"
 symptom,n,（疾病的）癥狀,"(n) any feeling of illness or physical or mental change that is caused by a particular disease
-Ex: He's complaining of all the usual flu symptoms - a high temperature, headache, and so on"
+Ex: He's complaining of all the usual flu symptoms - a high temperature, headache, and so on
+例如：他抱怨自己出現了所有常見的流感症狀──高燒、頭痛等等。"
 fever,n,發燒,"(n) a condition in which body temperature is higher than normal,
-Ex: A high fever is a common symptom of infection"
+Ex: A high fever is a common symptom of infection
+例如：高燒是感染的常見症狀。"
 cough,n,咳，咳嗽,"(n) to force air out of your lungs through your throat with a short, loud sound
-Ex: The smoke made me cough"
+Ex: The smoke made me cough
+例如：煙霧讓我咳嗽"
 fatigue,n,疲勞,"(n) extreme tiredness, especially caused by illness or hard work
-Ex: Many patients reported fatigue after infection."
+Ex: Many patients reported fatigue after infection.
+例：許多患者在感染後表示感到疲倦。"
+smell,n,嗅覺；氣味.,"(n) the ability to notice odors with the nose; a particular odor,
+
+Ex: Some people temporarily lose their sense of smell.
+例如：有些人暫時失去了嗅覺。"
+nasal,a,鼻的,"(a) related to the nose, 
+Ex: nasal passages, 鼻道
+Ex: nasal congestion, 鼻塞"
+congestion,n,擁擠，阻塞,"(n) a situation in which a place is too blocked or crowded, causing difficulties, 
+Ex: These facilities are designed to ease the congestion of emergency rooms
+例如：這些設施旨在緩解急診室的擁擠狀況。"
+conjunctivitis,n,結膜炎,"(n) a painful infection of the eyes that makes them red and makes the eyelids swollen 
+and sticky, "
+sore,a,痛的，疼痛的,"(a) painful and uncomfortable because of injury, infection, or too much use, 
+
+Ex: All the dust has made my eyes sore.
+例如：灰塵讓我的眼睛很痛。
+Ex: sore throat.
+例如：喉嚨痛。"
+headache,n,頭痛,"(n) a pain in the head.
+Ex: She had a headache and a sore throat
+例如：她頭痛又喉嚨痛。"
+muscle,n,肌肉,"(n) one of the tissues in the body that makes movement possible.
+Ex: COVID-19 may cause muscle pain.
+例如：新冠病毒感染可能導致肌肉疼痛。"
+joint,n,關節,"(n) a place in your body where two bones are connected
+Ex: an elbow/hip/knee joint, 肘/ 髖/ 膝關節"
+diarrhea,n,腹瀉,"(n) an illness in which the body's solid waste is more liquid than usual and comes out of the body more often, 
+Ex: an attack of diarrhoea, 腹瀉發作"
+rash,n,皮疹，疹子,"(n) a lot of small red spots on the skin, 
+Ex: I've got an itchy rash all over my chest.
+例如：我胸口長滿了癢癢的皮疹。"
+chill,n,寒冷;寒意，涼意,"(n) a feeling of cold, 
+Ex: There was a chill in the air this morning.
+例如：今天早上空氣中瀰漫著一絲寒意。"
+dizziness,n,眩暈,"(n) a temporary feeling that your sense of balance is not good and that you may fall down, 
+Ex: The sight of blood may cause dizziness in some people
+例如：有些人看到血會感到頭暈。"
+nausea,n,噁心，嘔吐感,"(n) the feeling that you are going to vomit
+Ex: Signs of the illness include fever, nausea, and vomiting.
+例如：這種疾病的症狀包括發燒、噁心和嘔吐。"
+vomiting,n,嘔吐,"(n) the act of bringing food or liquid up from the stomach through the mouth, 
+Ex: Severe nausea may lead to vomiting.
+例如：嚴重的噁心可能導致嘔吐。"
+severe,a,"非常嚴重的；劇烈
+的；慘重的","(a) causing very great pain, difficulty, worry, damage, etc.; very serious, 
+Ex: In parts of Africa there is a severe food/water shortage.
+例如：非洲部分地區嚴重缺糧/缺水。"
+shortness of breath,n,呼吸急促；呼吸困難,"(n) difficulty breathing normally, 
+Ex: Shortness of breath can be a sign of severe disease.
+例如：呼吸急促可能是嚴重疾病的徵兆。"
+appetite,n,食慾，胃口,"(n) the feeling that you want to eat food, 
+Ex: All that walking has given me an appetite.
+例：走了這麼多路，我胃口大開。"
+confusion,n,困惑，糊塗;迷惑不解;混淆,"(n) a situation in which people do not understand what is happening, what they should do or who someone or something is, 
+Ex: There seems to be some confusion over who is actually giving the talk
+例如：似乎有人搞不清楚到底是誰在演講。"
+chest,n,胸膛，胸部;胸腔,"(n) the upper front part of the body of humans and some animals, between the stomach and the neck, containing the heart and lungs, 
+Ex: He was shot in the chest at point blank range.
+例：他被近距離射中胸部。"
+irritability,n,易怒性情，暴脾氣,"(n) the quality of becoming annoyed very easily, 
+Ex: The drug can cause irritability
+例如：這種藥物會引起煩躁。"
+consciousness,n,意識;感覺;覺悟,"(n) the state of understanding and realizing something, 
+Ex: Her consciousness that she's different makes her feel uneasy
+例如：她意識到自己與眾不同，這讓她感到不安。"
+anxiety,n,焦慮,"(n) a feeling of worry, nervousness, or fear, 
+Ex: Long illness can cause anxiety in some patients.
+例如：長期患病會導致一些患者焦慮。"
+depression,n,憂鬱，抑鬱;消沉，沮喪,"(n) the state of feeling very unhappy and without hope for the future, 
+Ex: I was overwhelmed by feelings of depression
+例如：我當時感到非常沮喪。"
+disorder,n,混亂，淩亂，雜亂無章,"(n) a state of untidiness or lack of organization, 
+Ex: The whole office was in a state of disorder.
+例：整個辦公室一片混亂。"
+neurological,a,神經的;神經系統的,"(a) relating to nerves, 
+Ex: Alzheimer's disease is a neurological disorder.
+例如：阿茲海默症是一種神經系統疾病。"
+complication,n,"併發症
+使情況複雜化的事物；複雜化","(n) an extra medical problem that makes it more difficult to treat an existing illness, 併發症
+(n) 使情況複雜化的事物；複雜化
+Ex: If there are no complications, the doctor says that she'll be able to come home within two weeks.
+例如：如果沒有併發症，醫生說她兩週內就能回家。"
+stroke,n,中風,"(n) a sudden change in the blood supply to a part of the brain, sometimes causing a loss of the 
+ability to move particular parts of the body, 
+Ex: She suffered/had a stroke that left her unable to speak.
+例如：她中風了，導致她無法說話。"
+inflammation,n,炎（症）,"(n) a red, painful, and often swollen area in or on a part of your body,
+Ex: Aspirin reduces pain and inflammation
+例如：阿斯匹靈可以減輕疼痛和發炎。"
+delirium,n,（因發燒或精神錯亂而）神志不清;語無倫次,"(n) a state of being unable to think or speak clearly because of fever or mental confusion, 
+
+Ex: fever accompanied by delirium
+例如：高燒伴有神志不清"
+recover,v,康復；恢復.,"(v) to become well again after an illness, 
+Ex: Most people recover without hospital treatment.
+例：大多數人無需住院治療即可康復。"
+treatment,n,對待;待遇;處理,"(n) the way you deal with or behave towards someone or something, 
+Ex: Peter gets special treatment because he knows the boss.
+例如：彼得因為認識老闆而受到特殊待遇。"
+oxygen,n,氧氣,"(n) a gas in the air that people and animals need to breathe, 
+Ex: Some seriously ill patients require oxygen.
+例如：有些重症患者需要吸氧氣。"
+respiratory,a,呼吸的,"(a) relating to breathing, "
+respiratory failure,n,呼吸衰竭.,"(n) a dangerous condition in which the lungs cannot provide enough oxygen to the body, 
+Ex: Respiratory failure needs immediate medical care.
+例如：呼吸衰竭需要立即就醫。"
+acute,a,十分嚴重的,"(a) If a bad situation is acute, it causes severe problems or damage, 
+Ex: She felt acute embarrassment at his behaviour.
+例如：她對他的行為感到非常尷尬。"
+syndrome,n,併發症，症候群，綜合症狀,"(n) a combination of medical problems that shows the existence of a particular disease or mental condition, 
+Ex: Early diagnosis of the syndrome is difficult, but it is important to begin treatment as soon as possible
+例如：這種綜合徵的早期診斷很困難，但盡快開始治療至關重要。"
+sepsis,n,敗血症，膿毒症，膿毒病,"(n) a severe medical condition in which bacteria enter the blood after an operation or accident, "
+septic shock,n,敗血症性休克，感染性休克，膿毒性休克,"(n) 
+Ex: She was already in septic shock and died five days later
+例：她當時已經處於敗血性休克狀態，五天後過世。"
+thromboembolism,n,血栓栓塞,"(n) the blocking of a blood vessel by a blood clot that travels through the bloodstream, 
+Ex: Doctors watch for thromboembolism in severe cases.
+例如：醫師會在嚴重病例中密切觀察血栓栓塞的發生情形。"
+kidney,n,腎，腎臟,"(n) either of a pair of small organs in the body that take away waste matter from the blood to produce urine, 
+Ex: kidney failure
+例如：腎衰竭"
+age,n,年齡,(n) 
+age,v,衰老，使…顯得蒼老,"(v) If someone ages or something ages them, they look older, 
+
+Ex: She's aged since the last time we met.
+例如：自從上次見面以來，她老了不少。"
+underlying,a,暗含的;深層的;潛在的,"(a) real but not immediately obvious, 
+Ex: And what might be the underlying significance of these supposedly random acts?
+例如：這些看似隨機的行為背後可能隱藏著什麼意義？"
+lung,n,肺，肺部,"(n) either of the two organs in the chest with which people and some animals breathe, 
+Ex: lung cancer
+例：肺癌"
+diabetes,n,糖尿病,"(n) a disease in which the body cannot control the level of sugar in the blood, 
+Ex: Diabetes is diagnosed with a blood test.
+例：糖尿病是透過血液檢查診斷的。"
