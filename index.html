@@ -6,19 +6,18 @@
     <title>極致單字卡</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;800&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
         :root {
             --primary: #4F46E5;
-            --primary-hover: #4338CA;
-            --secondary: #10B981;
-            --secondary-hover: #059669;
-            --bg-gradient: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
-            --card-bg: rgba(255, 255, 255, 0.85);
-            --text-main: #1F2937;
-            --text-muted: #6B7280;
-            --ai-bg: #EEF2FF;
+            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            --secondary-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            --bg-gradient: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+            --card-bg: rgba(255, 255, 255, 0.92);
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --ai-bg: #eef2ff;
         }
 
         body {
@@ -30,70 +29,131 @@
             justify-content: center;
             align-items: center;
             color: var(--text-main);
+            letter-spacing: 0.3px;
         }
 
-        .app-container { width: 100%; max-width: 480px; padding: 20px; box-sizing: border-box; }
+        .app-container { 
+            width: 100%; 
+            max-width: 460px; 
+            padding: 20px; 
+            box-sizing: border-box; 
+        }
 
         .glass-card {
-            background: var(--card-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-            border-radius: 24px; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.5); padding: 30px 25px;
-            text-align: center; transition: all 0.3s ease;
+            background: var(--card-bg); 
+            backdrop-filter: blur(16px); 
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 28px; 
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255,255,255,0.6);
+            border: 1px solid rgba(255, 255, 255, 0.8); 
+            padding: 35px 25px;
+            text-align: center; 
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .setup-area { display: block; }
-        .practice-area { display: none; animation: fadeIn 0.5s ease; }
+        .practice-area { display: none; animation: fadeIn 0.5s ease; cursor: pointer; }
+        .practice-area:active { transform: scale(0.98); } /* 點擊卡片的微縮回饋 */
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        h1 { font-size: 24px; margin-bottom: 25px; color: var(--primary); }
-        .input-group { margin-bottom: 20px; text-align: left; }
-        .input-group label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--text-muted); }
+        h1 { 
+            font-size: 26px; 
+            font-weight: 800;
+            margin-bottom: 25px; 
+            color: var(--primary); 
+            text-shadow: 0 2px 10px rgba(79, 70, 229, 0.15);
+        }
+
+        .input-group { margin-bottom: 22px; text-align: left; }
+        .input-group label { 
+            display: block; 
+            font-size: 14px; 
+            font-weight: 600; 
+            margin-bottom: 8px; 
+            color: var(--text-muted); 
+            padding-left: 4px;
+        }
 
         select {
-            width: 100%; padding: 14px; font-size: 16px; border-radius: 12px;
-            border: 2px solid #E5E7EB; background-color: white; outline: none; font-family: inherit;
+            width: 100%; padding: 15px; font-size: 15px; border-radius: 14px;
+            border: 2px solid #e2e8f0; background-color: #f8fafc; outline: none; 
+            font-family: inherit; color: var(--text-main); font-weight: 500;
+            transition: border-color 0.2s, background-color 0.2s;
         }
-        select optgroup { font-size: 14px; color: #6B7280; background: #F3F4F6; font-weight: bold; }
+        select:focus { border-color: var(--primary); background-color: #fff; }
+        select optgroup { font-size: 14px; color: var(--text-muted); font-weight: bold; }
 
         .btn {
-            width: 100%; padding: 16px; font-size: 18px; font-weight: 600; border-radius: 14px;
-            border: none; cursor: pointer; color: white; background: var(--primary);
-            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3); transition: all 0.2s; font-family: inherit;
+            width: 100%; padding: 16px; font-size: 17px; font-weight: 600; border-radius: 16px;
+            border: none; cursor: pointer; color: white; 
+            background: var(--primary-gradient);
+            box-shadow: 0 8px 20px rgba(79, 70, 229, 0.25); 
+            transition: all 0.2s ease; font-family: inherit; letter-spacing: 0.5px;
         }
-        .btn:active { transform: scale(0.97); }
-        .btn-reveal { background: var(--primary); margin-top: 20px; }
-        .btn-next { background: var(--secondary); margin-top: 20px; display: none; }
-        .btn-ai { background: #6366F1; margin-top: 15px; }
+        .btn:hover { box-shadow: 0 10px 25px rgba(79, 70, 229, 0.35); transform: translateY(-2px); }
+        .btn:active { transform: scale(0.96); }
+        
+        .btn-reveal { margin-top: 25px; }
+        .btn-next { background: var(--secondary-gradient); box-shadow: 0 8px 20px rgba(16, 185, 129, 0.25); margin-top: 25px; display: none; }
+        .btn-next:hover { box-shadow: 0 10px 25px rgba(16, 185, 129, 0.35); }
+        .btn-ai { margin-top: 15px; }
 
-        .word-header { display: flex; justify-content: center; align-items: center; gap: 15px; margin-bottom: 10px; }
-        .word-en { font-size: 38px; font-weight: 700; margin: 0; }
-        .btn-audio { background: #EEF2FF; color: var(--primary); border: none; border-radius: 50%; width: 45px; height: 45px; font-size: 20px; cursor: pointer; transition: 0.2s; }
-        .btn-audio:active { transform: scale(0.9); background: #E0E7FF; }
+        .word-header { display: flex; justify-content: center; align-items: center; gap: 18px; margin-bottom: 12px; }
+        .word-en { font-size: 42px; font-weight: 800; margin: 0; color: #0f172a; letter-spacing: -0.5px; }
+        
+        .btn-audio { 
+            background: #e0e7ff; color: var(--primary); border: none; border-radius: 50%; 
+            width: 48px; height: 48px; font-size: 20px; cursor: pointer; 
+            transition: 0.2s; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.1);
+            display: flex; justify-content: center; align-items: center;
+        }
+        .btn-audio:hover { background: #c7d2fe; transform: scale(1.05); }
+        .btn-audio:active { transform: scale(0.9); background: #a5b4fc; }
 
-        .pos-badge { display: inline-block; background: #F3F4F6; color: var(--text-muted); padding: 6px 12px; border-radius: 20px; font-size: 15px; margin-bottom: 15px; border: 1px solid #E5E7EB; }
+        .pos-badge { 
+            display: inline-block; background: #f1f5f9; color: #475569; 
+            padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: 600;
+            margin-bottom: 20px; border: 1px solid #e2e8f0; 
+        }
 
-        /* 解答區塊 (包含圖片與詳情)，加上淡入動畫 */
         .answer-section { display: none; width: 100%; animation: fadeIn 0.4s ease; }
 
-        /* 圖片區域設定 */
-        #imageContainer { margin-bottom: 20px; position: relative; min-height: 120px; width: 100%; }
-        #wordImg { width: 100%; max-height: 220px; object-fit: cover; border-radius: 16px; transition: opacity 0.5s; background: #f3f4f6; opacity: 0; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-        .img-loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #9CA3AF; font-size: 12px; }
+        #imageContainer { margin-bottom: 20px; position: relative; min-height: 140px; width: 100%; }
+        #wordImg { 
+            width: 100%; max-height: 240px; object-fit: cover; border-radius: 18px; 
+            transition: opacity 0.5s; background: #f8fafc; opacity: 0; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.06); border: 1px solid #f1f5f9;
+        }
+        .img-loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #94a3b8; font-size: 13px; font-weight: 500; }
 
-        .details-area { background: #F9FAFB; border-radius: 16px; padding: 20px; text-align: left; margin-bottom: 20px; border: 1px solid #E5E7EB; }
-        .details-zh { font-size: 22px; font-weight: 700; margin: 0 0 10px 0; color: var(--text-main); }
-        .details-note { font-size: 16px; color: var(--text-muted); border-top: 1px dashed #D1D5DB; padding-top: 10px; line-height: 1.5; }
+        .details-area { 
+            background: #f8fafc; border-radius: 18px; padding: 25px 20px; 
+            text-align: center; margin-bottom: 20px; border: 1px solid #e2e8f0; 
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .details-zh { font-size: 26px; font-weight: 700; margin: 0; color: #0f172a; }
 
-        .progress-wrapper { margin-bottom: 25px; }
-        .progress-bar-bg { width: 100%; height: 8px; background: #E5E7EB; border-radius: 10px; overflow: hidden; }
-        .progress-bar-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.4s; }
+        .progress-wrapper { margin-bottom: 30px; }
+        .progress-bar-bg { width: 100%; height: 10px; background: #e2e8f0; border-radius: 20px; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); }
+        .progress-bar-fill { 
+            height: 100%; background: var(--primary-gradient); width: 0%; 
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 20px; 
+        }
         
-        .finish-screen { display: none; }
-        .ai-prompt-box { background: var(--ai-bg); padding: 15px; border-radius: 12px; margin: 15px 0; font-size: 13px; text-align: left; border: 1px solid #C7D2FE; color: #3730A3; max-height: 100px; overflow-y: auto; word-break: break-all; }
+        .finish-screen { display: none; cursor: default; }
+        .ai-prompt-box { 
+            background: var(--ai-bg); padding: 18px; border-radius: 16px; margin: 20px 0; 
+            font-size: 14px; text-align: left; border: 1px solid #c7d2fe; color: #3730A3; 
+            max-height: 120px; overflow-y: auto; word-break: break-all; line-height: 1.6;
+        }
+        
+        .click-hint {
+            font-size: 12px; color: #94a3b8; margin-top: 15px; font-weight: 500;
+        }
     </style>
 </head>
 <body>
@@ -104,7 +164,6 @@
             <div class="input-group">
                 <label>選擇單字表 (CSV)</label>
                 <select id="csvSelector">
-                    <!-- <option value="">-- 請選擇單字表 --</option> -->
                     <option value="data/list1.csv">Ch1 Covid-19</option>
                 </select>
             </div>
@@ -121,10 +180,10 @@
             <button class="btn" onclick="startPractice()">開始練習 <i class="fa-solid fa-rocket"></i></button>
         </div>
 
-        <div class="glass-card practice-area" id="practiceArea">
+        <div class="glass-card practice-area" id="practiceArea" onclick="handleAreaClick(event)">
             <div class="progress-wrapper">
-                <div style="display:flex; justify-content:space-between; font-size:14px; margin-bottom:8px; color:var(--text-muted);">
-                    <span>進度</span><span id="progressCount">0 / 0</span>
+                <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:600; margin-bottom:10px; color:var(--text-muted);">
+                    <span>練習進度</span><span id="progressCount">0 / 0</span>
                 </div>
                 <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressBar"></div></div>
             </div>
@@ -137,32 +196,32 @@
                 <div class="pos-badge" id="wordPos"></div>
                 
                 <div class="answer-section" id="answerSection">
-                    
                     <div id="imageContainer">
-                        <div class="img-loading" id="imgStatus"><i class="fa-solid fa-spinner fa-spin"></i> 正在維基百科尋找圖片...</div>
+                        <div class="img-loading" id="imgStatus"><i class="fa-solid fa-spinner fa-spin"></i> 正在尋找圖片...</div>
                         <img id="wordImg" src="">
-                        <div id="imgSource" style="font-size:11px; color:#9CA3AF; text-align:center; margin-top:8px; line-height: 1.5;">
+                        <div id="imgSource" style="font-size:11px; color:#94a3b8; text-align:center; margin-top:10px; line-height: 1.5;">
                             <i class="fa-brands fa-wikipedia-w"></i> 圖片由 Wikipedia 提供<br>
-                            <span style="font-size: 10px;">(圖片為系統自動關聯，不一定和中文意思完全一樣)</span>
+                            <span style="font-size: 10px;">(圖片為系統自動關聯，不一定與字義完全相符)</span>
                         </div>
                     </div>
 
                     <div class="details-area" id="detailsArea">
                         <p class="details-zh" id="wordZh"></p>
-                        <p class="details-note" id="wordNote"></p>
                     </div>
                 </div>
 
                 <button class="btn btn-reveal" id="revealBtn" onclick="revealAnswer()">顯示解答</button>
                 <button class="btn btn-next" id="nextBtn" onclick="nextWord()">下一個</button>
+                
+                <div class="click-hint" id="clickHint"><i class="fa-regular fa-hand-pointer"></i> 點擊卡片任意處繼續</div>
             </div>
 
             <div class="finish-screen" id="finishScreen">
-                <div style="font-size:60px; color:#F59E0B;"><i class="fa-solid fa-trophy"></i></div>
-                <h2>練習完成！</h2>
+                <div style="font-size:65px; color:#F59E0B; margin-bottom: 10px;"><i class="fa-solid fa-trophy"></i></div>
+                <h2 style="color: #0f172a; margin-bottom: 5px;">練習完成！</h2>
                 <div class="ai-prompt-box" id="aiPromptBox"></div>
                 <button class="btn btn-ai" onclick="copyAndOpenAI()">複製指令並開啟 ChatGPT</button>
-                <button class="btn" style="background:#6B7280; margin-top:10px;" onclick="location.reload()">回主選單</button>
+                <button class="btn" style="background: #94a3b8; box-shadow: none; margin-top:12px;" onclick="location.reload()">回主選單</button>
             </div>
         </div>
     </div>
@@ -181,7 +240,6 @@
                 complete: function(results) {
                     let all = results.data;
                     
-                    // 修改1邏輯：判斷全顯示、打亂或是切片
                     if (drawCount === 'all_seq') {
                         practiceWords = all;
                     } else if (drawCount === 'all_shuffle') {
@@ -205,38 +263,37 @@
             });
         }
 
+        function handleAreaClick(event) {
+            if (event.target.closest('button')) return;
+            if (document.getElementById('cardContent').style.display === 'none') return;
+
+            if (document.getElementById('answerSection').style.display === 'none') {
+                revealAnswer();
+            } else {
+                nextWord();
+            }
+        }
+
         function renderCard() {
             const word = practiceWords[currentIndex];
             const en = word['英文'] || 'Error';
             const zh = word['中文'] || '無資料';
 
-            // 填入資料
             document.getElementById('wordEn').textContent = en;
             document.getElementById('wordPos').textContent = word['詞性'] || '';
             document.getElementById('wordZh').textContent = zh;
-            
-            const noteEl = document.getElementById('wordNote');
-            if (word['備註']) {
-                noteEl.style.display = 'block';
-                noteEl.textContent = word['備註'];
-            } else {
-                noteEl.style.display = 'none';
-            }
 
-            // 重置介面狀態 (隱藏解答區，顯示按鈕)
             document.getElementById('answerSection').style.display = 'none';
             document.getElementById('revealBtn').style.display = 'block';
             document.getElementById('nextBtn').style.display = 'none';
 
-            // --- 維基百科 (Wikipedia) API 抓圖邏輯 (在背景偷跑) ---
             const img = document.getElementById('wordImg');
             const container = document.getElementById('imageContainer');
             const status = document.getElementById('imgStatus');
             
-            // 預設將圖片容器打開
             container.style.display = 'block';
             img.style.opacity = '0';
-            img.src = ''; // 🌟 新增這行：先清空上一題的舊圖片，避免殘影
+            img.src = ''; 
             status.style.display = 'block';
             
             const wikiUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(en)}&prop=pageimages&format=json&pithumbsize=600&origin=*`;
@@ -255,15 +312,13 @@
                             status.style.display = 'none';
                         };
                     } else {
-                        container.style.display = 'none'; // 無圖片則隱藏
+                        container.style.display = 'none';
                     }
                 })
                 .catch(err => {
-                    container.style.display = 'none'; // 報錯則隱藏
+                    container.style.display = 'none';
                 });
-            // ------------------------------------------
 
-            // 更新進度條
             const cur = currentIndex + 1;
             const total = practiceWords.length;
             document.getElementById('progressCount').textContent = `${cur} / ${total}`;
@@ -272,7 +327,6 @@
             playAudio();
         }
 
-        // 修改2邏輯：顯示解答時，才打開外層容器 (包含圖片跟文字)
         function revealAnswer() {
             document.getElementById('answerSection').style.display = 'block';
             document.getElementById('revealBtn').style.display = 'none';
@@ -293,10 +347,8 @@
             document.getElementById('cardContent').style.display = 'none';
             document.getElementById('finishScreen').style.display = 'block';
             
-            // 整理單字與中文意思的對照清單
             const wordWithZh = practiceWords.map(w => `${w['英文']} (${w['中文'] || '無資料'})`).join(', ');
             
-            // 🌟 修正：將字串完全靠左，這樣貼到 ChatGPT 才會整齊
             const customPrompt = `我剛練習完這 ${practiceWords.length} 個英文單字與對應中文：
 [${wordWithZh}]。
 針對這些單字，提供一些幽默的諧音或記憶口訣幫助我長期記憶。`;
@@ -306,12 +358,7 @@
 
         function copyAndOpenAI() {
             const prompt = document.getElementById('aiPromptBox').textContent;
-            
-            // 1. 先複製到剪貼簿（當作備份）
             navigator.clipboard.writeText(prompt);
-
-            // 2. 自動跳轉到帶有指令的網址 (這會讓 ChatGPT 開啟時直接輸入好文字)
-            // 註：這需要瀏覽器權限，且 ChatGPT 介面有時會變動，但這是目前最快的方法
             const encodedPrompt = encodeURIComponent(prompt);
             window.open(`https://chatgpt.com/?q=${encodedPrompt}`, '_blank');
         }
