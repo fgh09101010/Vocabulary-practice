@@ -53,7 +53,7 @@
 
         .setup-area { display: block; }
         .practice-area { display: none; animation: fadeIn 0.5s ease; cursor: pointer; }
-        .practice-area:active { transform: scale(0.98); } /* 點擊卡片的微縮回饋 */
+        .practice-area:active { transform: scale(0.98); }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(15px); }
@@ -97,6 +97,13 @@
         .btn:hover { box-shadow: 0 10px 25px rgba(79, 70, 229, 0.35); transform: translateY(-2px); }
         .btn:active { transform: scale(0.96); }
         
+        /* 🌟 新增 PDF 閱讀按鈕的樣式 */
+        .btn-pdf {
+            background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1;
+            box-shadow: none; margin-bottom: 15px; display: none;
+        }
+        .btn-pdf:hover { background: #e2e8f0; color: #0f172a; box-shadow: none; transform: translateY(0); }
+
         .btn-reveal { margin-top: 25px; }
         .btn-next { background: var(--secondary-gradient); box-shadow: 0 8px 20px rgba(16, 185, 129, 0.25); margin-top: 25px; display: none; }
         .btn-next:hover { box-shadow: 0 10px 25px rgba(16, 185, 129, 0.35); }
@@ -140,7 +147,7 @@
             font-weight: 700; 
             margin: 0; 
             color: #0f172a; 
-            white-space: pre-line; /* 🌟 加上這行：告訴瀏覽器保留文字原本的換行 */
+            white-space: pre-line;
         }
 
         .progress-wrapper { margin-bottom: 30px; }
@@ -167,10 +174,13 @@
     <div class="app-container">
         <div class="glass-card setup-area" id="setupArea">
             <h1><i class="fa-solid fa-layer-group"></i> 準備練習</h1>
+            
             <div class="input-group">
                 <label>選擇單字表 (CSV)</label>
-                <select id="csvSelector">
-                    <option value="data/list1.csv">Ch1 Covid-19</option>
+                <select id="csvSelector" onchange="checkPdf()">
+                    <option value="data/list1.csv" data-pdf="pdf/article1.pdf">Ch1 Covid-19 單字與文章</option>
+                    <!-- <option value="data/list2.csv" data-pdf="pdf/article2.pdf">Ch2</option>
+                    <option value="data/list3.csv" data-pdf="pdf/article3.pdf">Ch3</option> -->
                 </select>
             </div>
             
@@ -183,7 +193,12 @@
                     <option value="all_shuffle">全顯示 (並全部打亂)</option>
                 </select>
             </div>
-            <button class="btn" onclick="startPractice()">開始練習 <i class="fa-solid fa-rocket"></i></button>
+            
+            <button id="readPdfBtn" class="btn btn-pdf" onclick="openPdf()">
+                <i class="fa-solid fa-file-pdf" style="color:#ef4444;"></i> 閱讀本課文章
+            </button>
+            
+            <button class="btn" onclick="startPractice()">開始背單字 <i class="fa-solid fa-rocket"></i></button>
         </div>
 
         <div class="glass-card practice-area" id="practiceArea" onclick="handleAreaClick(event)">
@@ -235,6 +250,32 @@
     <script>
         let practiceWords = [];
         let currentIndex = 0;
+        let currentPdfUrl = ""; // 紀錄目前選擇的 PDF 連結
+
+        // 🌟 新增：檢查選擇的單字表是否有綁定 PDF
+        function checkPdf() {
+            const select = document.getElementById('csvSelector');
+            const selectedOption = select.options[select.selectedIndex];
+            const pdfUrl = selectedOption.getAttribute('data-pdf');
+            const pdfBtn = document.getElementById('readPdfBtn');
+
+            if (pdfUrl) {
+                currentPdfUrl = pdfUrl;
+                pdfBtn.style.display = 'block'; // 有 PDF 就顯示按鈕
+            } else {
+                currentPdfUrl = "";
+                pdfBtn.style.display = 'none';  // 沒 PDF 就隱藏
+            }
+        }
+
+        // 🌟 新增：開啟 PDF 連結 (另開視窗)
+        function openPdf() {
+            if (currentPdfUrl) {
+                window.open(currentPdfUrl, '_blank');
+            }
+        }
+
+        // --- 以下為原有邏輯，未更動 ---
 
         function startPractice() {
             const fileUrl = document.getElementById('csvSelector').value;
@@ -378,6 +419,11 @@
                 window.speechSynthesis.speak(u);
             }
         }
+
+        // 初始化檢查一次，萬一預設選項有 PDF
+        window.onload = function() {
+            checkPdf();
+        };
     </script>
 </body>
 </html>
