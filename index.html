@@ -178,9 +178,10 @@
             <div class="input-group">
                 <label>選擇單字表 (CSV)</label>
                 <select id="csvSelector" onchange="checkPdf()">
-                    <option value="data/list1.csv" data-pdf="pdf/article1.pdf">Ch1 Covid-19 單字與文章</option>
-                    <!-- <option value="data/list2.csv" data-pdf="pdf/article2.pdf">Ch2</option>
-                    <option value="data/list3.csv" data-pdf="pdf/article3.pdf">Ch3</option> -->
+                    <option value="data/list1.csv" data-pdf="pdf/article1.pdf">Ch1 Covid-19</option>
+                    <!-- <option value="data/list2.csv" data-pdf="pdf/article2.pdf">Ch2 Tesla</option> -->
+                    <option id="secretOption" value="data/list2.csv" data-pdf="pdf/article2.pdf" style="display:none;">Ch2 Tesla</option>
+                    <!-- <option value="data/list3.csv" data-pdf="pdf/article3.pdf">Ch3</option> -->
                 </select>
             </div>
             
@@ -420,10 +421,48 @@
             }
         }
 
+        // 🌟 隱藏解鎖邏輯 (點擊標題 5 下)
+        let clickCount = 0;
+        let clickTimer = null;
+        const clickLimit = 5; // 需要連續點擊的次數
+
+        // 找到標題元素 (假設是 h1)
+        const h1Title = document.querySelector('h1');
+
+        if (h1Title) {
+            // 增加一個圖示提示 (可選，讓你自己知道點哪裡)
+            h1Title.style.cursor = 'pointer';
+
+            h1Title.addEventListener('click', () => {
+                // 清除上一個計時器
+                clearTimeout(clickTimer);
+                
+                // 增加點擊次數
+                clickCount++;
+                
+                // 設定一個計時器，如果 1.5 秒內沒點下一次，次數歸零
+                clickTimer = setTimeout(() => {
+                    clickCount = 0;
+                }, 1500);
+                
+                // 檢查是否達到次數
+                if (clickCount === clickLimit) {
+                    const secretOption = document.getElementById('secretOption');
+                    if (secretOption) {
+                        secretOption.style.display = 'block'; // 顯示 Ch2
+                        alert("🔓 隱藏章節 Ch2 已解鎖！");
+                        clickCount = 0; // 清空計數
+                    }
+                }
+            });
+        }
+
         // 初始化檢查一次，萬一預設選項有 PDF
         window.onload = function() {
             checkPdf();
         };
+
+        
     </script>
 </body>
 </html>
