@@ -10,7 +10,7 @@
 
 **以純前端技術打造的現代化單字學習網頁應用程式**
 
-## [✨ 立即體驗](https://fgh09101010.github.io/Vocabulary-practice/) 
+## [✨✨ 點我立即體驗 ✨✨](https://fgh09101010.github.io/Vocabulary-practice/) 
 
 </div>
 
@@ -82,7 +82,7 @@
         <img src="https://img.shields.io/badge/Status-Actively_Learning-brightgreen?style=flat-square" alt="Status" />
       </div>
       <p style="font-size: 0.9em; color: #555; margin-top: 15px;">
-        📫 聯絡我：<a href="mailto:fgh09101010@gmail.com">透過電子郵件交流</a>
+        📫 聯絡我：fgh09101010@gmail.com
       </p>
     </td>
   </tr>
