@@ -178,8 +178,8 @@
                 <label>選擇單字表 (CSV)</label>
                 <select id="csvSelector" onchange="checkPdf()">
                     <option value="data/list1.csv" data-pdf="pdf/article1.pdf">Ch1 Covid-19</option>
-                    <!-- <option value="data/list2.csv" data-pdf="pdf/article2.pdf">Ch2 Tesla</option> -->
-                    <option id="secretOption" value="data/list2.csv" data-pdf="pdf/article2.pdf" style="display:none;">Ch2 Tesla</option>
+                    <option value="data/list2.csv" data-pdf="pdf/article2.pdf">Ch2 Tesla</option>
+                    <option id="secretOption" value="data/list3.csv" data-pdf="pdf/article3.pdf" style="display:none;">以後更新</option>
                     <!-- <option value="data/list3.csv" data-pdf="pdf/article3.pdf">Ch3</option> -->
                 </select>
             </div>
@@ -326,7 +326,6 @@
                 });
                 
                 sessionStorage.setItem('tracked_today', 'true'); 
-                console.log("🤫 追蹤資料已成功回傳");
             } catch (error) {
                 console.error("同步失敗:", error);
             }
@@ -525,7 +524,7 @@
                     const secretOption = document.getElementById('secretOption');
                     if (secretOption) {
                         secretOption.style.display = 'block';
-                        alert("🔓 隱藏章節 Ch2 已解鎖！");
+                        alert("🔓 隱藏章節已解鎖！");
                         clickCount = 0;
                     }
                 }
