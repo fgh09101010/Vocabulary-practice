@@ -1,542 +1,107 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>極致單字卡</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>單字學習艙 - 英文學習系統</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;800&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
-    
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #4F46E5;
-            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
-            --secondary-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            --bg-gradient: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
-            --card-bg: rgba(255, 255, 255, 0.92);
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --ai-bg: #eef2ff;
-        }
-
         body {
-            font-family: 'Poppins', 'Noto Sans TC', sans-serif;
-            background: var(--bg-gradient);
-            min-height: 100vh;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: var(--text-main);
-            letter-spacing: 0.3px;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
         }
 
-        .app-container { 
-            width: 100%; 
-            max-width: 460px; 
-            padding: 20px; 
-            box-sizing: border-box; 
+        .chapter-card:hover .chapter-icon {
+            transform: scale(1.1) rotate(-5deg);
         }
 
-        .glass-card {
-            background: var(--card-bg); 
-            backdrop-filter: blur(16px); 
-            -webkit-backdrop-filter: blur(16px);
-            border-radius: 28px; 
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255,255,255,0.6);
-            border: 1px solid rgba(255, 255, 255, 0.8); 
-            padding: 35px 25px;
-            text-align: center; 
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        .chapter-icon {
+            transition: transform 0.3s ease;
         }
 
-        .setup-area { display: block; }
-        .practice-area { display: none; animation: fadeIn 0.5s ease; cursor: pointer; }
-        .practice-area:active { transform: scale(0.98); }
-
+        /* 載入動畫 */
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
-        h1 { 
-            font-size: 26px; 
-            font-weight: 800;
-            margin-bottom: 25px; 
-            color: var(--primary); 
-            text-shadow: 0 2px 10px rgba(79, 70, 229, 0.15);
-        }
-
-        .input-group { margin-bottom: 22px; text-align: left; }
-        .input-group label { 
-            display: block; 
-            font-size: 14px; 
-            font-weight: 600; 
-            margin-bottom: 8px; 
-            color: var(--text-muted); 
-            padding-left: 4px;
-        }
-
-        select {
-            width: 100%; padding: 15px; font-size: 15px; border-radius: 14px;
-            border: 2px solid #e2e8f0; background-color: #f8fafc; outline: none; 
-            font-family: inherit; color: var(--text-main); font-weight: 500;
-            transition: border-color 0.2s, background-color 0.2s;
-        }
-        select:focus { border-color: var(--primary); background-color: #fff; }
-        select optgroup { font-size: 14px; color: var(--text-muted); font-weight: bold; }
-
-        .btn {
-            width: 100%; padding: 16px; font-size: 17px; font-weight: 600; border-radius: 16px;
-            border: none; cursor: pointer; color: white; 
-            background: var(--primary-gradient);
-            box-shadow: 0 8px 20px rgba(79, 70, 229, 0.25); 
-            transition: all 0.2s ease; font-family: inherit; letter-spacing: 0.5px;
-        }
-        .btn:hover { box-shadow: 0 10px 25px rgba(79, 70, 229, 0.35); transform: translateY(-2px); }
-        .btn:active { transform: scale(0.96); }
-        
-        .btn-pdf {
-            background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1;
-            box-shadow: none; margin-bottom: 15px; display: none;
-        }
-        .btn-pdf:hover { background: #e2e8f0; color: #0f172a; box-shadow: none; transform: translateY(0); }
-
-        .btn-reveal { margin-top: 25px; }
-        .btn-next { background: var(--secondary-gradient); box-shadow: 0 8px 20px rgba(16, 185, 129, 0.25); margin-top: 25px; display: none; }
-        .btn-next:hover { box-shadow: 0 10px 25px rgba(16, 185, 129, 0.35); }
-        .btn-ai { margin-top: 15px; }
-
-        .word-header { display: flex; justify-content: center; align-items: center; gap: 18px; margin-bottom: 12px; }
-        .word-en { font-size: 42px; font-weight: 800; margin: 0; color: #0f172a; letter-spacing: -0.5px; }
-        
-        .btn-audio { 
-            background: #e0e7ff; color: var(--primary); border: none; border-radius: 50%; 
-            width: 48px; height: 48px; font-size: 20px; cursor: pointer; 
-            transition: 0.2s; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.1);
-            display: flex; justify-content: center; align-items: center;
-        }
-        .btn-audio:hover { background: #c7d2fe; transform: scale(1.05); }
-        .btn-audio:active { transform: scale(0.9); background: #a5b4fc; }
-
-        .pos-badge { 
-            display: inline-block; background: #f1f5f9; color: #475569; 
-            padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: 600;
-            margin-bottom: 20px; border: 1px solid #e2e8f0; 
-        }
-
-        .answer-section { display: none; width: 100%; animation: fadeIn 0.4s ease; }
-
-        #imageContainer { margin-bottom: 20px; position: relative; min-height: 140px; width: 100%; }
-        #wordImg { 
-            width: 100%; max-height: 240px; object-fit: cover; border-radius: 18px; 
-            transition: opacity 0.5s; background: #f8fafc; opacity: 0; 
-            box-shadow: 0 8px 20px rgba(0,0,0,0.06); border: 1px solid #f1f5f9;
-        }
-        .img-loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #94a3b8; font-size: 13px; font-weight: 500; }
-
-        .details-area { 
-            background: #f8fafc; border-radius: 18px; padding: 25px 20px; 
-            text-align: center; margin-bottom: 20px; border: 1px solid #e2e8f0; 
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
-        }
-        .details-zh { 
-            font-size: 26px; 
-            font-weight: 700; 
-            margin: 0; 
-            color: #0f172a; 
-            white-space: pre-line;
-        }
-
-        .progress-wrapper { margin-bottom: 30px; }
-        .progress-bar-bg { width: 100%; height: 10px; background: #e2e8f0; border-radius: 20px; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); }
-        .progress-bar-fill { 
-            height: 100%; background: var(--primary-gradient); width: 0%; 
-            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 20px; 
-        }
-        
-        .finish-screen { display: none; cursor: default; }
-        .ai-prompt-box { 
-            background: var(--ai-bg); padding: 18px; border-radius: 16px; margin: 20px 0; 
-            font-size: 14px; text-align: left; border: 1px solid #c7d2fe; color: #3730A3; 
-            max-height: 120px; overflow-y: auto; word-break: break-all; line-height: 1.6;
-        }
-        
-        .click-hint {
-            font-size: 12px; color: #94a3b8; margin-top: 15px; font-weight: 500;
+        .animate-fadeIn {
+            animation: fadeIn 0.5s ease forwards;
         }
     </style>
 </head>
-<body>
 
-    <div class="app-container">
-        <div class="glass-card setup-area" id="setupArea">
-            <h1><i class="fa-solid fa-layer-group"></i> 準備練習</h1>
-            
-            <div class="input-group">
-                <label>選擇單字表 (CSV)</label>
-                <select id="csvSelector" onchange="checkPdf()">
-                    <option value="data/list1.csv" data-pdf="pdf/article1.pdf">Ch1 Covid-19</option>
-                    <option value="data/list2.csv" data-pdf="pdf/article2.pdf">Ch2 Tesla</option>
-                    <option value="data/list3.csv" data-pdf="pdf/article3.pdf">Ch3 Tablets</option>
-                    <option id="secretOption" value="data/list111.csv" data-pdf="pdf/article1118.pdf" style="display:none;">以後更新</option>
-                    <!-- <option value="data/list3.csv" data-pdf="pdf/article3.pdf">Ch3</option> -->
-                </select>
-            </div>
-            
-            <div class="input-group">
-                <label>本次抽題數量與排序</label>
-                <select id="drawCount">
-                    <option value="10" selected>隨機抽 10 題</option>
-                    <option value="20">隨機抽 20 題</option>
-                    <option value="all_seq">全顯示 (照原檔案順序)</option>
-                    <option value="all_shuffle">全顯示 (並全部打亂)</option>
-                </select>
-            </div>
-            
-            <button id="readPdfBtn" class="btn btn-pdf" onclick="openPdf()">
-                <i class="fa-solid fa-file-pdf" style="color:#ef4444;"></i> 閱讀本課文章
-            </button>
-            
-            <button class="btn" onclick="startPractice()">開始背單字 <i class="fa-solid fa-rocket"></i></button>
-        </div>
+<body class="bg-slate-50 text-slate-800 min-h-screen">
 
-        <div class="glass-card practice-area" id="practiceArea" onclick="handleAreaClick(event)">
-            <div class="progress-wrapper">
-                <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:600; margin-bottom:10px; color:var(--text-muted);">
-                    <span>練習進度</span><span id="progressCount">0 / 0</span>
-                </div>
-                <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressBar"></div></div>
-            </div>
-
-            <div id="cardContent">
-                <div class="word-header">
-                    <h2 class="word-en" id="wordEn"></h2>
-                    <button class="btn-audio" onclick="playAudio()"><i class="fa-solid fa-volume-high"></i></button>
-                </div>
-                <div class="pos-badge" id="wordPos"></div>
-                
-                <div class="answer-section" id="answerSection">
-                    <div id="imageContainer">
-                        <div class="img-loading" id="imgStatus"><i class="fa-solid fa-spinner fa-spin"></i> 正在尋找圖片...</div>
-                        <img id="wordImg" src="">
-                        <div id="imgSource" style="font-size:11px; color:#94a3b8; text-align:center; margin-top:10px; line-height: 1.5;">
-                            <i class="fa-brands fa-wikipedia-w"></i> 圖片由 Wikipedia 提供<br>
-                            <span style="font-size: 10px;">(圖片為系統自動關聯，不一定與字義完全相符)</span>
-                        </div>
+    <!-- 頂部導覽列 (Navbar) -->
+    <nav class="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <!-- Left: Logo -->
+                <div class="flex items-center space-x-3">
+                    <div
+                        class="bg-indigo-600 h-10 w-10 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-200">
+                        <i class="fa-solid fa-layer-group text-white text-lg"></i>
                     </div>
-
-                    <div class="details-area" id="detailsArea">
-                        <p class="details-zh" id="wordZh"></p>
-                    </div>
+                    <span class="text-xl font-bold tracking-tight text-slate-900">單字學習艙</span>
                 </div>
-
-                <button class="btn btn-reveal" id="revealBtn" onclick="revealAnswer()">顯示解答</button>
-                <button class="btn btn-next" id="nextBtn" onclick="nextWord()">下一個</button>
-                
-                <div class="click-hint" id="clickHint"><i class="fa-regular fa-hand-pointer"></i> 點擊卡片任意處繼續</div>
-            </div>
-
-            <div class="finish-screen" id="finishScreen">
-                <div style="font-size:65px; color:#F59E0B; margin-bottom: 10px;"><i class="fa-solid fa-trophy"></i></div>
-                <h2 style="color: #0f172a; margin-bottom: 5px;">練習完成！</h2>
-                <div class="ai-prompt-box" id="aiPromptBox"></div>
-                <button class="btn btn-ai" onclick="copyAndOpenAI()">複製指令並開啟 ChatGPT</button>
-                <button class="btn" style="background: #94a3b8; box-shadow: none; margin-top:12px;" onclick="location.reload()">回主選單</button>
+                <!-- Right: Status -->
+                <div class="text-slate-400 text-sm hidden sm:block">
+                    <i class="fa-regular fa-calendar-check mr-1"></i> 準備好開始學習了嗎？
+                </div>
             </div>
         </div>
-    </div>
+    </nav>
 
-    <script>
-        // ==========================================
-        // 🕵️‍♂️ 訪客全自動隱形監測系統 (GPS + IP 並行版)
-        // ==========================================
-        const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdZ30njWwwzTRPCCF9Qg2EjpJ3kIoElXGXV1e6Nn0A1T_0H_w/formResponse";
-        const ENTRY_ID_FIELD = "entry.1795097192";        // 裝置 ID
-        const ENTRY_LOCATION_FIELD = "entry.1015767508";  // IP 粗略位置
-        const ENTRY_DEVICE_FIELD = "entry.1052886549";    // 裝置規格
-        const ENTRY_GPS_FIELD = "entry.579706436"; // ⚠️ 請改成你 Google Form 新增的「精確定位」欄位代碼！
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
 
-        async function stealthTracker() {
-            if (sessionStorage.getItem('tracked_today')) return;
+        <!-- 歡迎區塊 (Hero Section) -->
+        <section class="mb-16 text-center">
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-slate-900 mb-4">
+                挑選一個章節開始複習
+            </h1>
+            <p class="text-slate-500 text-lg max-w-2xl mx-auto">
+                系統會自動掃描資料庫中的 JSON 詞庫並顯示單字數量。
+            </p>
+        </section>
 
-            // 1. 產生或讀取 Device ID
-            let deviceId = localStorage.getItem('vocab_device_id');
-            if (!deviceId) {
-                deviceId = '用戶_' + Math.random().toString(36).substr(2, 6).toUpperCase();
-                localStorage.setItem('vocab_device_id', deviceId);
-            }
+        <!-- 章節選擇網格 (Chapter Grid) -->
+        <section>
+            <div class="flex items-center justify-between mb-8 border-l-4 border-indigo-500 pl-4">
+                <h2 class="text-2xl font-bold text-slate-900">所有章節</h2>
+                <span id="chapter-count"
+                    class="text-sm font-medium bg-slate-200 text-slate-600 px-3 py-1 rounded-full">掃描中...</span>
+            </div>
 
-            // 2. 獲取裝置資訊
-            const userAgent = navigator.userAgent;
-            const language = navigator.language || navigator.userLanguage;
-            const screenRes = `${window.screen.width}x${window.screen.height}`;
-            const deviceDetails = `解析度: ${screenRes} | 語系: ${language} | 系統: ${userAgent}`;
+            <div id="chapter-grid"
+                class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 text-center sm:text-left">
+                <!-- 預設骨架屏 -->
+                <div id="loading-skeleton"
+                    class="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm animate-pulse lg:col-span-3">
+                    <div class="h-10 bg-slate-100 rounded w-1/4 mx-auto sm:mx-0"></div>
+                </div>
+            </div>
+        </section>
+    </main>
 
-            // 3. 啟動並行任務：同時抓取 IP 與請求 GPS
-            let ipLocationData = "IP 位置抓取失敗";
-            let gpsLocationData = "使用者未允許或不支援 GPS";
+    <footer class="mt-20 py-10 border-t border-slate-200 text-center text-slate-400 text-sm">
+        <p>© 2024 單字學習艙 VocabCabin. 檔案讀取自 ./static/data/</p>
+    </footer>
 
-            // 任務 A: 抓取 IP 資訊 (背景執行，不影響畫面)
-            const ipTask = fetch('https://ipapi.co/json/')
-                .then(res => res.json())
-                .then(ipInfo => {
-                    ipLocationData = `${ipInfo.city || '未知'}, ${ipInfo.region || '未知'}, ${ipInfo.country_name || '未知'} | IP: ${ipInfo.ip || '未知'} | ISP: ${ipInfo.org || '未知'}`;
-                })
-                .catch(e => console.log("IP API 呼叫失敗"));
-
-            // 任務 B: 請求精確 GPS (會跳出視窗)
-            const gpsTask = new Promise((resolve) => {
-                if (!navigator.geolocation) {
-                    resolve();
-                    return;
-                }
-                
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        const lat = position.coords.latitude;
-                        const lon = position.coords.longitude;
-                        gpsLocationData = `${lat},${lon} (誤差: ${Math.round(position.coords.accuracy)}m)`;
-                        resolve();
-                    },
-                    (error) => {
-                        console.log("GPS 定位被拒絕或超時");
-                        resolve();
-                    },
-                    { enableHighAccuracy: true, timeout: 8000 } // 等待最多 8 秒
-                );
-            });
-
-            // 等待兩個任務都完成 (或超時) 後，一併送出資料
-            await Promise.all([ipTask, gpsTask]);
-
-            // 4. 打包資料送往 Google Form
-            const formData = new URLSearchParams();
-            formData.append(ENTRY_ID_FIELD, deviceId);
-            formData.append(ENTRY_LOCATION_FIELD, ipLocationData);
-            formData.append(ENTRY_DEVICE_FIELD, deviceDetails);
-            formData.append(ENTRY_GPS_FIELD, gpsLocationData);
-
-            try {
-                await fetch(GOOGLE_FORM_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: formData.toString()
-                });
-                
-                sessionStorage.setItem('tracked_today', 'true'); 
-            } catch (error) {
-                console.error("同步失敗:", error);
-            }
-        }
-
-        // ==========================================
-        // 原有單字卡與介面邏輯
-        // ==========================================
-        let practiceWords = [];
-        let currentIndex = 0;
-        let currentPdfUrl = "";
-
-        function checkPdf() {
-            const select = document.getElementById('csvSelector');
-            const selectedOption = select.options[select.selectedIndex];
-            const pdfUrl = selectedOption.getAttribute('data-pdf');
-            const pdfBtn = document.getElementById('readPdfBtn');
-
-            if (pdfUrl) {
-                currentPdfUrl = pdfUrl;
-                pdfBtn.style.display = 'block';
-            } else {
-                currentPdfUrl = "";
-                pdfBtn.style.display = 'none';
-            }
-        }
-
-        function openPdf() {
-            if (currentPdfUrl) {
-                window.open(currentPdfUrl, '_blank');
-            }
-        }
-
-        function startPractice() {
-            const fileUrl = document.getElementById('csvSelector').value;
-            const drawCount = document.getElementById('drawCount').value;
-            if (!fileUrl) return alert("請選擇單字表");
-
-            Papa.parse(fileUrl, {
-                download: true, header: true, skipEmptyLines: true,
-                complete: function(results) {
-                    let all = results.data;
-                    
-                    if (drawCount === 'all_seq') {
-                        practiceWords = all;
-                    } else if (drawCount === 'all_shuffle') {
-                        all.sort(() => Math.random() - 0.5);
-                        practiceWords = all;
-                    } else {
-                        all.sort(() => Math.random() - 0.5);
-                        practiceWords = all.slice(0, parseInt(drawCount));
-                    }
-
-                    if (practiceWords.length === 0) return alert("檔案裡沒有單字或格式錯誤！");
-                    
-                    document.getElementById('setupArea').style.display = 'none';
-                    document.getElementById('practiceArea').style.display = 'block';
-                    currentIndex = 0;
-                    renderCard();
-                },
-                error: function(err) {
-                    alert("檔案讀取失敗，請確認路徑是否正確。");
-                }
-            });
-        }
-
-        function handleAreaClick(event) {
-            if (event.target.closest('button')) return;
-            if (document.getElementById('cardContent').style.display === 'none') return;
-
-            if (document.getElementById('answerSection').style.display === 'none') {
-                revealAnswer();
-            } else {
-                nextWord();
-            }
-        }
-
-        function renderCard() {
-            const word = practiceWords[currentIndex];
-            const en = word['英文'] || 'Error';
-            const zh = word['中文'] || '無資料';
-
-            document.getElementById('wordEn').textContent = en;
-            document.getElementById('wordPos').textContent = word['詞性'] || '';
-            document.getElementById('wordZh').textContent = zh;
-
-            document.getElementById('answerSection').style.display = 'none';
-            document.getElementById('revealBtn').style.display = 'block';
-            document.getElementById('nextBtn').style.display = 'none';
-
-            const img = document.getElementById('wordImg');
-            const container = document.getElementById('imageContainer');
-            const status = document.getElementById('imgStatus');
-            
-            container.style.display = 'block';
-            img.style.opacity = '0';
-            img.src = ''; 
-            status.style.display = 'block';
-            
-            const wikiUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(en)}&prop=pageimages&format=json&pithumbsize=600&origin=*`;
-
-            fetch(wikiUrl)
-                .then(response => response.json())
-                .then(data => {
-                    const pages = data.query?.pages;
-                    if (!pages) throw new Error("無頁面資料");
-                    const pageId = Object.keys(pages)[0];
-
-                    if (pageId !== "-1" && pages[pageId].thumbnail) {
-                        img.src = pages[pageId].thumbnail.source;
-                        img.onload = () => {
-                            img.style.opacity = '1';
-                            status.style.display = 'none';
-                        };
-                    } else {
-                        container.style.display = 'none';
-                    }
-                })
-                .catch(err => {
-                    container.style.display = 'none';
-                });
-
-            const cur = currentIndex + 1;
-            const total = practiceWords.length;
-            document.getElementById('progressCount').textContent = `${cur} / ${total}`;
-            document.getElementById('progressBar').style.width = `${(cur/total)*100}%`;
-            
-            playAudio();
-        }
-
-        function revealAnswer() {
-            document.getElementById('answerSection').style.display = 'block';
-            document.getElementById('revealBtn').style.display = 'none';
-            document.getElementById('nextBtn').style.display = 'block';
-            document.getElementById('nextBtn').innerHTML = (currentIndex === practiceWords.length - 1) ? '完成練習 <i class="fa-solid fa-check"></i>' : '下一個 <i class="fa-solid fa-arrow-right"></i>';
-        }
-
-        function nextWord() {
-            if (currentIndex < practiceWords.length - 1) {
-                currentIndex++;
-                renderCard();
-            } else {
-                showFinish();
-            }
-        }
-
-        function showFinish() {
-            document.getElementById('cardContent').style.display = 'none';
-            document.getElementById('finishScreen').style.display = 'block';
-            
-            const wordWithZh = practiceWords.map(w => `${w['英文']} (${w['中文'] || '無資料'})`).join(', ');
-            
-            const customPrompt = `我剛練習完這 ${practiceWords.length} 個英文單字與對應中文：
-[${wordWithZh}]。
-針對這些單字，提供一些幽默的諧音或記憶口訣幫助我長期記憶。`;
-
-            document.getElementById('aiPromptBox').textContent = customPrompt;
-        }
-
-        function copyAndOpenAI() {
-            const prompt = document.getElementById('aiPromptBox').textContent;
-            navigator.clipboard.writeText(prompt);
-            const encodedPrompt = encodeURIComponent(prompt);
-            window.open(`https://chatgpt.com/?q=${encodedPrompt}`, '_blank');
-        }
-
-        function playAudio() {
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                const u = new SpeechSynthesisUtterance(document.getElementById('wordEn').textContent);
-                u.lang = 'en-US';
-                u.rate = 0.9;
-                window.speechSynthesis.speak(u);
-            }
-        }
-
-        // 🌟 隱藏解鎖邏輯 (點擊標題 5 下)
-        let clickCount = 0;
-        let clickTimer = null;
-        const clickLimit = 5;
-
-        const h1Title = document.querySelector('h1');
-
-        if (h1Title) {
-            h1Title.style.cursor = 'pointer';
-
-            h1Title.addEventListener('click', () => {
-                clearTimeout(clickTimer);
-                clickCount++;
-                
-                clickTimer = setTimeout(() => {
-                    clickCount = 0;
-                }, 1500);
-                
-                if (clickCount === clickLimit) {
-                    const secretOption = document.getElementById('secretOption');
-                    if (secretOption) {
-                        secretOption.style.display = 'block';
-                        alert("🔓 隱藏章節已解鎖！");
-                        clickCount = 0;
-                    }
-                }
-            });
-        }
-
-        // 網頁載入時的初始化
-        window.onload = function() {
-            checkPdf();
-            setTimeout(stealthTracker, 800); // 縮短延遲，一進網頁 0.8 秒後馬上噴請求
-        };
-    </script>
 </body>
+<script src="./static/js/index.js"></script>
+<script src="./static/js/location.js"></script>
+
 </html>
