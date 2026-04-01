@@ -8,6 +8,7 @@ let activeSettings = {
   count: null,
   random: false,
 };
+let reviewHistory = [];
 
 const knownWordIds = new Set();
 const unknownWordIds = new Set();
@@ -44,14 +45,6 @@ const fallbackWordData = [
 ];
 
 async function loadChapter(filename) {
-  const title = filename.replace(".json", "");
-  document.getElementById("chapter-title").innerHTML =
-    `<a href="./index.html" class="inline-flex items-center cursor-pointer hover:opacity-80 transition">
-        <i class="fa-solid fa-layer-group text-indigo-500 mr-2"></i>
-        <span>${title}</span>
-    </a>
-    `;
-
   try {
     const response = await fetch(`static/data/${filename}`);
     if (!response.ok) {
@@ -114,9 +107,11 @@ function resetStudySession(words) {
   wordData = [...words];
   currentWordIndex = 0;
   roundReviewedCount = 0;
+  reviewHistory = [];
   knownWordIds.clear();
   unknownWordIds.clear();
   closeSummaryModal();
+  resetFlipState();
 
   if (wordData.length > 0) {
     loadWordData(currentWordIndex);
@@ -139,7 +134,9 @@ function startReviewUnknownWords() {
   wordData = nextRoundWords;
   currentWordIndex = 0;
   roundReviewedCount = 0;
+  reviewHistory = [];
   closeSummaryModal();
+  resetFlipState();
   loadWordData(currentWordIndex);
   updateProgressChips();
 }
@@ -176,31 +173,76 @@ function loadWordData(index) {
   if (!wordData || wordData.length === 0) return;
   const data = wordData[index];
 
-  document.getElementById("word-counter").innerText = `${index + 1} / ${wordData.length}`;
-  document.getElementById("front-word").innerText = data.word || "";
-  document.getElementById("back-word").innerText = data.word || "";
+  const wordCounter = document.getElementById("word-counter");
+  const frontWord = document.getElementById("front-word");
+  const backWord = document.getElementById("back-word");
+  const pos = document.getElementById("pos");
+  const meaning = document.getElementById("meaning");
+  const homophone = document.getElementById("homophone");
+  const roots = document.getElementById("roots");
+  const ex1En = document.getElementById("ex1-en");
+  const ex1Zh = document.getElementById("ex1-zh");
+  const ex2En = document.getElementById("ex2-en");
+  const ex2Zh = document.getElementById("ex2-zh");
+
+  if (wordCounter) wordCounter.innerText = `${index + 1} / ${wordData.length}`;
+  if (frontWord) frontWord.innerText = data.word || "";
+  if (backWord) backWord.innerText = data.word || "";
   applyWordSize("front-word", data.word || "");
   applyWordSize("back-word", data.word || "");
-  document.getElementById("pos").innerText = data.pos || "";
-  document.getElementById("meaning").innerText = data.meaning || "";
-  document.getElementById("homophone").innerHTML = data.homophone || "";
-  document.getElementById("roots").innerHTML = data.roots || "";
-  document.getElementById("ex1-en").innerHTML = data.ex1En || "";
-  document.getElementById("ex1-zh").innerHTML = data.ex1Zh || "";
-  document.getElementById("ex2-en").innerHTML = data.ex2En || "";
-  document.getElementById("ex2-zh").innerHTML = data.ex2Zh || "";
-  resetFlipState();
+  if (pos) pos.innerText = data.pos || "";
+  if (meaning) meaning.innerText = data.meaning || "";
+  if (homophone) homophone.innerHTML = data.homophone || "";
+  if (roots) roots.innerHTML = data.roots || "";
+  if (ex1En) ex1En.innerHTML = data.ex1En || "";
+  if (ex1Zh) ex1Zh.innerHTML = data.ex1Zh || "";
+  if (ex2En) ex2En.innerHTML = data.ex2En || "";
+  if (ex2Zh) ex2Zh.innerHTML = data.ex2Zh || "";
 }
 
 function updateProgressChips() {
-  const totalWords = originalWordData.length;
   const completedCount = knownWordIds.size;
   const unknownCount = unknownWordIds.size;
-  const remainingCount = Math.max(totalWords - completedCount - unknownCount, 0);
 
-  document.getElementById("known-count-chip").innerText = `已經會 ${completedCount}`;
-  document.getElementById("unknown-count-chip").innerText = `還不會 ${unknownCount}`;
-  document.getElementById("remaining-count-chip").innerText = `剩餘 ${remainingCount}`;
+  const knownChip = document.getElementById("known-count-chip");
+  const unknownChip = document.getElementById("unknown-count-chip");
+  const previousButton = document.getElementById("previous-word-button");
+
+  if (knownChip) knownChip.innerText = `會 ${completedCount}`;
+  if (unknownChip) unknownChip.innerText = `不會 ${unknownCount}`;
+  if (previousButton) previousButton.disabled = reviewHistory.length === 0;
+}
+
+function goToExitDestination() {
+  if (window.history.length > 1) {
+    window.history.back();
+    return;
+  }
+
+  window.location.href = "./index.html";
+}
+
+function restorePreviousWord() {
+  if (reviewHistory.length === 0) return;
+
+  const modal = document.getElementById("review-summary-modal");
+  if (modal && !modal.classList.contains("hidden")) {
+    closeSummaryModal();
+  }
+
+  const previousEntry = reviewHistory.pop();
+  if (!previousEntry) return;
+
+  if (previousEntry.result === "known") {
+    knownWordIds.delete(previousEntry.wordId);
+  } else {
+    unknownWordIds.delete(previousEntry.wordId);
+  }
+
+  roundReviewedCount = Math.max(roundReviewedCount - 1, 0);
+  currentWordIndex = previousEntry.index;
+  loadWordData(currentWordIndex);
+  updateProgressChips();
 }
 
 function markCurrentWord(result) {
@@ -217,6 +259,11 @@ function markCurrentWord(result) {
     knownWordIds.delete(currentWord.id);
   }
 
+  reviewHistory.push({
+    index: currentWordIndex,
+    wordId: currentWord.id,
+    result,
+  });
   roundReviewedCount += 1;
   updateProgressChips();
 
@@ -440,6 +487,19 @@ function setupModalEvents() {
   });
 }
 
+function setupNavigationEvents() {
+  const exitButton = document.getElementById("exit-button");
+  const previousButton = document.getElementById("previous-word-button");
+
+  if (exitButton) {
+    exitButton.addEventListener("click", goToExitDestination);
+  }
+
+  if (previousButton) {
+    previousButton.addEventListener("click", restorePreviousWord);
+  }
+}
+
 function isTypingTarget(target) {
   if (!target) return false;
 
@@ -496,6 +556,7 @@ window.onload = () => {
 
   setupSwipeEvents();
   setupModalEvents();
+  setupNavigationEvents();
   setupKeyboardEvents();
 
   if (chapterFile) {

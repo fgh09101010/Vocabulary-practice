@@ -120,6 +120,18 @@
             font-size: clamp(1.9rem, 6.6vw, 3.1rem);
         }
 
+        .back-word-display.word-size-default {
+            font-size: clamp(2rem, 5.4vw, 3rem);
+        }
+
+        .back-word-display.word-size-long {
+            font-size: clamp(1.8rem, 4.6vw, 2.5rem);
+        }
+
+        .back-word-display.word-size-xlong {
+            font-size: clamp(1.55rem, 3.8vw, 2.1rem);
+        }
+
         @media (min-width: 768px) {
             .word-size-default {
                 font-size: clamp(4.5rem, 8vw, 6rem);
@@ -132,43 +144,44 @@
             .word-size-xlong {
                 font-size: clamp(2.8rem, 5.2vw, 4rem);
             }
+
+            .back-word-display.word-size-default {
+                font-size: clamp(2.4rem, 3.5vw, 3.4rem);
+            }
+
+            .back-word-display.word-size-long {
+                font-size: clamp(2rem, 2.9vw, 2.8rem);
+            }
+
+            .back-word-display.word-size-xlong {
+                font-size: clamp(1.7rem, 2.4vw, 2.25rem);
+            }
         }
     </style>
 </head>
-<body class="bg-slate-100 min-h-screen flex flex-col items-center justify-center p-4 md:p-8 font-sans text-slate-800">
+<body class="bg-slate-100 h-screen overflow-hidden flex flex-col items-center justify-center p-3 md:p-5 font-sans text-slate-800">
 
-    <!-- 頂部控制列 (整合標題與導覽按鈕) -->
-    <div class="w-full max-w-5xl flex flex-wrap justify-between items-center mb-4 md:mb-6 px-2 gap-y-4">
-        
-        <!-- 左側：標題 (動態變更) -->
-        <h1 id="chapter-title" class="text-2xl font-bold text-slate-700 w-1/2 md:w-auto flex items-center">
-            <i class="fa-solid fa-layer-group text-indigo-500 mr-2"></i>單字學習
-        </h1>
-        
-        <!-- 中間：計數器 -->
-        <div class="w-full md:w-auto flex items-center justify-center">
-            <span id="word-counter" class="text-slate-500 font-bold px-1 text-base md:text-lg whitespace-nowrap min-w-[3rem] text-center tracking-wide">
+    <div class="w-full max-w-5xl mb-3 md:mb-4">
+        <div class="relative flex items-center justify-center min-h-12">
+            <button id="exit-button" type="button" class="absolute left-0 inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:text-slate-800 hover:shadow" title="離開">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <span id="word-counter" class="text-slate-500 font-bold text-base md:text-lg whitespace-nowrap text-center tracking-[0.18em]">
                 1 / 1
             </span>
         </div>
-        
-    </div>
 
-    <div class="w-full max-w-5xl flex flex-wrap items-center justify-between gap-3 mb-4 px-2">
-        <div class="inline-flex items-center gap-2 rounded-full bg-white/90 px-4 py-2 text-sm text-slate-500 shadow-sm border border-slate-200">
-            <i class="fa-solid fa-hand-pointer text-indigo-400"></i>
-            點卡片或空白鍵翻面，左滑或方向鍵左代表還不會，右滑或方向鍵右代表已經會
-        </div>
-        <div class="flex flex-wrap items-center gap-2 text-sm font-semibold">
-            <span id="known-count-chip" class="rounded-full bg-emerald-50 text-emerald-700 px-3 py-1.5 border border-emerald-100">已經會 0</span>
-            <span id="unknown-count-chip" class="rounded-full bg-orange-50 text-orange-700 px-3 py-1.5 border border-orange-100">還不會 0</span>
-            <span id="remaining-count-chip" class="rounded-full bg-slate-100 text-slate-600 px-3 py-1.5 border border-slate-200">剩餘 0</span>
+        <div class="mt-3 flex items-center justify-center gap-2 md:gap-3">
+            <span id="unknown-count-chip" class="rounded-full border border-orange-100 bg-orange-50 px-3 py-1.5 text-xs md:text-sm font-semibold text-orange-700">
+                不會 0
+            </span>
+            <span id="known-count-chip" class="rounded-full border border-emerald-100 bg-emerald-50 px-3 py-1.5 text-xs md:text-sm font-semibold text-emerald-700">
+                會 0
+            </span>
         </div>
     </div>
 
-    <!-- 單字卡容器 (固定高度，防止位移) -->
-    <!-- 桌面版高 600px，手機版高 750px，保證內容裝得下且不拉長頁面 -->
-    <div class="perspective-1000 w-full max-w-5xl h-[750px] md:h-[600px] relative">
+    <div class="perspective-1000 w-full max-w-5xl h-[calc(100vh-9.5rem)] md:h-[calc(100vh-10rem)] max-h-[760px] min-h-[480px] relative">
         
         <!-- 卡片翻轉主體 -->
         <div id="card-shell" class="card-shell w-full h-full relative">
@@ -198,7 +211,7 @@
                 <div class="bg-slate-50 border-b border-slate-100 p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 cursor-pointer" onclick="flipCard()">
                     <div class="w-full min-w-0">
                         <div class="flex items-end gap-2 sm:gap-3 mb-1 w-full min-w-0">
-                            <h2 id="back-word" class="word-display word-size-long min-w-0 font-bold text-slate-800">Loading...</h2>
+                            <h2 id="back-word" class="back-word-display word-display word-size-long min-w-0 font-bold text-slate-800">Loading...</h2>
                             <span id="pos" class="px-3 py-1 bg-indigo-100 text-indigo-700 text-sm font-semibold rounded-md mb-1">...</span>
                             <!-- 🌟 背面：單字發音按鈕 🌟 -->
                             <button onclick="speakText('back-word', event)" class="mb-1.5 w-8 h-8 shrink-0 flex items-center justify-center rounded-full bg-slate-200/60 text-slate-500 hover:bg-indigo-100 hover:text-indigo-600 transition-colors" title="聆聽單字發音">
@@ -307,6 +320,10 @@
         </div>
         </div>
     </div>
+
+    <button id="previous-word-button" type="button" class="fixed left-3 bottom-3 md:left-5 md:bottom-5 z-40 inline-flex h-12 w-12 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 shadow-lg shadow-slate-300/40 transition hover:text-slate-800 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-40" title="回到上一張單字卡" disabled>
+        <i class="fa-solid fa-arrow-left text-lg"></i>
+    </button>
 
     <div id="review-summary-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/50 backdrop-blur-sm p-4">
         <div id="review-summary-panel" class="w-full max-w-xl rounded-[28px] bg-white shadow-2xl shadow-slate-900/20 overflow-hidden">
