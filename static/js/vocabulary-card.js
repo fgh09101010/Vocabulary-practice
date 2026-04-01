@@ -117,6 +117,22 @@ function changeWord(direction) {
   loadWordData(currentWordIndex);
 }
 
+function getWordSizeClass(word = "") {
+  const normalizedWord = String(word).replace(/\s+/g, "");
+
+  if (normalizedWord.length >= 15) return "word-size-xlong";
+  if (normalizedWord.length >= 10) return "word-size-long";
+  return "word-size-default";
+}
+
+function applyWordSize(elementId, word) {
+  const element = document.getElementById(elementId);
+  if (!element) return;
+
+  element.classList.remove("word-size-default", "word-size-long", "word-size-xlong");
+  element.classList.add(getWordSizeClass(word));
+}
+
 // 3. 載入單字資料到 UI
 function loadWordData(index) {
   if (!wordData || wordData.length === 0) return;
@@ -129,6 +145,8 @@ function loadWordData(index) {
   // 更新內容
   document.getElementById("front-word").innerText = data.word || "";
   document.getElementById("back-word").innerText = data.word || "";
+  applyWordSize("front-word", data.word || "");
+  applyWordSize("back-word", data.word || "");
   document.getElementById("pos").innerText = data.pos || "";
   document.getElementById("meaning").innerText = data.meaning || "";
   document.getElementById("homophone").innerHTML = data.homophone || "";

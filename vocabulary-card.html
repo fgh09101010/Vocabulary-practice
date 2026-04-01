@@ -49,6 +49,40 @@
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
             background: #94a3b8; 
         }
+
+        .word-display {
+            max-width: 100%;
+            overflow-wrap: anywhere;
+            word-break: break-word;
+            line-height: 0.9;
+            text-wrap: balance;
+        }
+
+        .word-size-default {
+            font-size: clamp(2.9rem, 10vw, 4.5rem);
+        }
+
+        .word-size-long {
+            font-size: clamp(2.4rem, 8vw, 3.8rem);
+        }
+
+        .word-size-xlong {
+            font-size: clamp(1.9rem, 6.6vw, 3.1rem);
+        }
+
+        @media (min-width: 768px) {
+            .word-size-default {
+                font-size: clamp(4.5rem, 8vw, 6rem);
+            }
+
+            .word-size-long {
+                font-size: clamp(3.6rem, 6.5vw, 5rem);
+            }
+
+            .word-size-xlong {
+                font-size: clamp(2.8rem, 5.2vw, 4rem);
+            }
+        }
     </style>
 </head>
 <body class="bg-slate-100 min-h-screen flex flex-col items-center justify-center p-4 md:p-8 font-sans text-slate-800">
@@ -88,14 +122,16 @@
             
             <!-- ================= 正面 (單字回想區) ================= -->
             <div class="absolute inset-0 w-full h-full backface-hidden bg-white rounded-2xl border border-slate-100 flex flex-col items-center justify-center cursor-pointer" onclick="flipCard()">
-                <div class="text-center flex flex-col items-center">
-                    <p class="text-slate-400 font-medium mb-4 uppercase tracking-widest text-sm">Tap to reveal</p>
-                    <div class="flex items-center justify-center gap-3">
-                        <h2 id="front-word" class="text-6xl md:text-8xl font-extrabold text-slate-800 tracking-tight">Loading...</h2>
+                <div class="text-center flex flex-col items-center w-full px-5 sm:px-8 md:px-10">
+                    <div class="inline-flex max-w-full flex-col items-center">
+                        <p class="text-slate-400 font-medium mb-4 uppercase tracking-widest text-sm">Tap to reveal</p>
+                        <div class="inline-flex max-w-full items-center justify-center gap-2 md:gap-3">
+                            <h2 id="front-word" class="word-display word-size-default min-w-0 font-extrabold text-slate-800 tracking-tight text-center">Loading...</h2>
                         <!-- 🌟 正面：單字發音按鈕 🌟 -->
-                        <button onclick="speakText('front-word', event)" class="text-slate-300 hover:text-indigo-500 transition-colors p-2 md:mt-4" title="聆聽單字發音">
-                            <i class="fa-solid fa-volume-high text-3xl md:text-4xl"></i>
-                        </button>
+                            <button onclick="speakText('front-word', event)" class="shrink-0 self-center text-slate-300 hover:text-indigo-500 transition-colors p-1.5 md:p-2" title="聆聽單字發音">
+                                <i class="fa-solid fa-volume-high text-2xl md:text-4xl"></i>
+                            </button>
+                        </div>
                     </div>
                     <p class="mt-6 text-slate-400"><i class="fa-solid fa-rotate text-2xl animate-pulse"></i></p>
                 </div>
@@ -106,12 +142,12 @@
                 
                 <!-- 頂部 Header：單字、詞性、中文意思 -->
                 <div class="bg-slate-50 border-b border-slate-100 p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4 cursor-pointer" onclick="flipCard()">
-                    <div>
-                        <div class="flex items-end gap-3 mb-1">
-                            <h2 id="back-word" class="text-4xl font-bold text-slate-800">Loading...</h2>
+                    <div class="w-full min-w-0">
+                        <div class="flex items-end gap-2 sm:gap-3 mb-1 w-full min-w-0">
+                            <h2 id="back-word" class="word-display word-size-long min-w-0 font-bold text-slate-800">Loading...</h2>
                             <span id="pos" class="px-3 py-1 bg-indigo-100 text-indigo-700 text-sm font-semibold rounded-md mb-1">...</span>
                             <!-- 🌟 背面：單字發音按鈕 🌟 -->
-                            <button onclick="speakText('back-word', event)" class="mb-1.5 w-8 h-8 flex items-center justify-center rounded-full bg-slate-200/60 text-slate-500 hover:bg-indigo-100 hover:text-indigo-600 transition-colors" title="聆聽單字發音">
+                            <button onclick="speakText('back-word', event)" class="mb-1.5 w-8 h-8 shrink-0 flex items-center justify-center rounded-full bg-slate-200/60 text-slate-500 hover:bg-indigo-100 hover:text-indigo-600 transition-colors" title="聆聽單字發音">
                                 <i class="fa-solid fa-volume-high text-sm"></i>
                             </button>
                         </div>
