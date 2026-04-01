@@ -34,25 +34,6 @@
             transition: transform 0.6s cubic-bezier(0.4, 0.2, 0.2, 1);
         }
 
-        /* 遮蔽效果 (不影響排版位移) */
-        .obscured {
-            filter: blur(8px);
-            opacity: 0.7;
-            transition: filter 0.3s ease, opacity 0.3s ease;
-            cursor: pointer;
-            user-select: none;
-        }
-        .obscured:hover {
-            filter: blur(4px);
-            opacity: 0.9;
-        }
-        .revealed {
-            filter: blur(0);
-            opacity: 1;
-            cursor: text;
-            user-select: auto;
-        }
-
         /* 自訂滾動條，保持整潔 */
         .custom-scrollbar::-webkit-scrollbar {
             width: 6px;
@@ -72,7 +53,7 @@
 </head>
 <body class="bg-slate-100 min-h-screen flex flex-col items-center justify-center p-4 md:p-8 font-sans text-slate-800">
 
-    <!-- 頂部控制列 (整合標題、導覽按鈕與專注模式) -->
+    <!-- 頂部控制列 (整合標題與導覽按鈕) -->
     <div class="w-full max-w-5xl flex flex-wrap justify-between items-center mb-4 md:mb-6 px-2 gap-y-4">
         
         <!-- 左側：標題 (動態變更) -->
@@ -80,17 +61,8 @@
             <i class="fa-solid fa-layer-group text-indigo-500 mr-2"></i>單字學習
         </h1>
         
-        <!-- 右側：遮蔽模式開關 (手機版靠右，桌面版在最右) -->
-        <div class="w-1/2 md:w-auto flex justify-end md:order-3">
-            <button id="focusToggleBtn" onclick="toggleFocusMode()" class="flex items-center gap-2 bg-white px-4 py-2.5 rounded-full shadow-sm hover:shadow text-sm font-medium text-slate-600 transition-all border border-slate-200">
-                <i class="fa-solid fa-eye-slash text-indigo-500"></i>
-                <span class="hidden sm:inline">專注模式 (遮蔽中文)</span>
-                <span class="sm:hidden">專注</span>
-            </button>
-        </div>
-
         <!-- 中間：切換按鈕與計數器 -->
-        <div class="w-full md:w-auto flex items-center justify-center gap-2 md:gap-4 md:order-2">
+        <div class="w-full md:w-auto flex items-center justify-center gap-2 md:gap-4">
             <button onclick="changeWord(-1)" class="flex-1 md:flex-none px-4 py-2.5 bg-white border border-slate-200 text-slate-600 rounded-xl hover:bg-slate-50 transition shadow-sm font-medium flex items-center justify-center">
                 <i class="fa-solid fa-arrow-left mr-2"></i> 上一個
             </button>

@@ -1,6 +1,5 @@
 // --- 狀態管理 ---
 let isFlipped = false;
-let isFocusMode = false;
 let currentWordIndex = 0;
 let wordData = []; // 動態載入的單字陣列
 
@@ -69,42 +68,7 @@ function flipCard() {
   }
 }
 
-// 2. 切換專注模式 (遮蔽與顯示中文)
-function toggleFocusMode() {
-  isFocusMode = !isFocusMode;
-  const btn = document.getElementById("focusToggleBtn");
-  const zhTexts = document.querySelectorAll(".zh-text");
-
-  if (isFocusMode) {
-    // 開啟專注模式：按鈕樣式改變，中文加上模糊 class
-    btn.classList.replace("text-slate-600", "text-indigo-600");
-    btn.classList.add("ring-2", "ring-indigo-100");
-    btn.innerHTML = `<i class="fa-solid fa-eye text-indigo-500"></i><span class="hidden sm:inline">關閉專注模式</span><span class="sm:hidden">關閉專注</span>`;
-
-    zhTexts.forEach((el) => {
-      el.classList.add("obscured");
-      el.classList.remove("revealed");
-      // 點擊可以單獨解除模糊 (刮刮樂效果)
-      el.onclick = function (e) {
-        e.stopPropagation(); // 防止點擊觸發卡片翻轉
-        this.classList.toggle("revealed");
-      };
-    });
-  } else {
-    // 關閉專注模式：恢復原狀
-    btn.classList.replace("text-indigo-600", "text-slate-600");
-    btn.classList.remove("ring-2", "ring-indigo-100");
-    btn.innerHTML = `<i class="fa-solid fa-eye-slash text-indigo-500"></i><span class="hidden sm:inline">專注模式 (遮蔽中文)</span><span class="sm:hidden">專注</span>`;
-
-    zhTexts.forEach((el) => {
-      el.classList.remove("obscured");
-      el.classList.remove("revealed");
-      el.onclick = null; // 移除點擊事件
-    });
-  }
-}
-
-// 3. 切換單字
+// 2. 切換單字
 function changeWord(direction) {
   if (!wordData || wordData.length === 0) return;
 
@@ -115,7 +79,7 @@ function changeWord(direction) {
   loadWordData(currentWordIndex);
 }
 
-// 4. 載入單字資料到 UI
+// 3. 載入單字資料到 UI
 function loadWordData(index) {
   if (!wordData || wordData.length === 0) return;
   const data = wordData[index];
@@ -135,12 +99,6 @@ function loadWordData(index) {
   document.getElementById("ex1-zh").innerHTML = data.ex1Zh || "";
   document.getElementById("ex2-en").innerHTML = data.ex2En || "";
   document.getElementById("ex2-zh").innerHTML = data.ex2Zh || "";
-
-  // 如果當前是專注模式，重新套用模糊效果到新載入的文字
-  if (isFocusMode) {
-    isFocusMode = false; // 先強制設為 false
-    toggleFocusMode(); // 重新觸發一次以綁定事件與樣式
-  }
 }
 
 // 語音朗讀功能 (Web Speech API)
