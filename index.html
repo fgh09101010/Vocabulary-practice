@@ -3,206 +3,221 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3135/3135679.png" type="image/png">
     <title>極致單字卡</title>
+    <meta name="description" content="幫助你快速記憶英文單字的專屬練功房，支援發音、圖片記憶與 AI 聯想口訣！">
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;800&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
     
     <style>
         :root {
-            --primary: #4F46E5;
-            --primary-gradient: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            --primary: #4F46E5; --primary-gradient: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
             --secondary-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
             --bg-gradient: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
-            --card-bg: rgba(255, 255, 255, 0.92);
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --ai-bg: #eef2ff;
+            --card-bg: rgba(255, 255, 255, 0.92); --text-main: #1e293b; --text-muted: #64748b;
         }
 
         body {
-            font-family: 'Poppins', 'Noto Sans TC', sans-serif;
-            background: var(--bg-gradient);
-            min-height: 100vh;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: var(--text-main);
-            letter-spacing: 0.3px;
+            font-family: 'Poppins', 'Noto Sans TC', sans-serif; background: var(--bg-gradient);
+            min-height: 100vh; margin: 0; display: flex; justify-content: center; align-items: center;
+            color: var(--text-main); letter-spacing: 0.3px; padding: 20px 0;
         }
 
-        .app-container { 
-            width: 100%; 
-            max-width: 460px; 
-            padding: 20px; 
-            box-sizing: border-box; 
-        }
+        .app-container { width: 100%; max-width: 460px; padding: 0 20px; box-sizing: border-box; }
 
         .glass-card {
-            background: var(--card-bg); 
-            backdrop-filter: blur(16px); 
-            -webkit-backdrop-filter: blur(16px);
-            border-radius: 28px; 
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255,255,255,0.6);
-            border: 1px solid rgba(255, 255, 255, 0.8); 
-            padding: 35px 25px;
-            text-align: center; 
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: var(--card-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border-radius: 28px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255,255,255,0.6);
+            border: 1px solid rgba(255, 255, 255, 0.8); padding: 35px 25px;
+            text-align: center; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); display: none;
         }
-
-        .setup-area { display: block; }
-        .practice-area { display: none; animation: fadeIn 0.5s ease; cursor: pointer; }
-        .practice-area:active { transform: scale(0.98); }
+        .active-card { display: block; animation: fadeIn 0.5s ease; }
+        
+        #practiceArea { cursor: pointer; }
+        #practiceArea:active { transform: scale(0.99); }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(15px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        h1 { 
-            font-size: 26px; 
-            font-weight: 800;
-            margin-bottom: 25px; 
-            color: var(--primary); 
-            text-shadow: 0 2px 10px rgba(79, 70, 229, 0.15);
-        }
+        h1 { font-size: 26px; font-weight: 800; margin-bottom: 25px; color: var(--primary); text-shadow: 0 2px 10px rgba(79, 70, 229, 0.15); }
+        #setupTitle { cursor: pointer; user-select: none; }
 
         .input-group { margin-bottom: 22px; text-align: left; }
-        .input-group label { 
-            display: block; 
-            font-size: 14px; 
-            font-weight: 600; 
-            margin-bottom: 8px; 
-            color: var(--text-muted); 
-            padding-left: 4px;
+        .input-group label.main-label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--text-muted); padding-left: 4px; }
+
+        .checkbox-group {
+            display: flex; flex-direction: column; gap: 8px; background: #f8fafc; padding: 12px; 
+            border-radius: 14px; border: 2px solid #e2e8f0; max-height: 220px; overflow-y: auto;
         }
+        .checkbox-label {
+            display: flex; align-items: center; gap: 12px; font-size: 15px; font-weight: 600; 
+            cursor: pointer; padding: 10px; border-radius: 10px; transition: 0.2s;
+            width: 100%; box-sizing: border-box; overflow: hidden;
+        }
+        .checkbox-label:hover { background: #e2e8f0; }
+        .checkbox-label input[type="checkbox"] { flex-shrink: 0; width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer; }
+        
+        .chapter-name { flex-grow: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .word-count { flex-shrink: 0; font-size: 12px; font-weight: 700; color: #64748b; background: #cbd5e1; padding: 4px 10px; border-radius: 12px; white-space: nowrap; }
 
         select {
-            width: 100%; padding: 15px; font-size: 15px; border-radius: 14px;
-            border: 2px solid #e2e8f0; background-color: #f8fafc; outline: none; 
-            font-family: inherit; color: var(--text-main); font-weight: 500;
-            transition: border-color 0.2s, background-color 0.2s;
+            width: 100%; padding: 15px; font-size: 15px; border-radius: 14px; border: 2px solid #e2e8f0; 
+            background-color: #f8fafc; outline: none; font-family: inherit; font-weight: 500;
         }
         select:focus { border-color: var(--primary); background-color: #fff; }
-        select optgroup { font-size: 14px; color: var(--text-muted); font-weight: bold; }
 
         .btn {
             width: 100%; padding: 16px; font-size: 17px; font-weight: 600; border-radius: 16px;
-            border: none; cursor: pointer; color: white; 
-            background: var(--primary-gradient);
-            box-shadow: 0 8px 20px rgba(79, 70, 229, 0.25); 
-            transition: all 0.2s ease; font-family: inherit; letter-spacing: 0.5px;
+            border: none; cursor: pointer; color: white; background: var(--primary-gradient);
+            box-shadow: 0 8px 20px rgba(79, 70, 229, 0.25); transition: 0.2s; margin-top: 10px;
         }
         .btn:hover { box-shadow: 0 10px 25px rgba(79, 70, 229, 0.35); transform: translateY(-2px); }
         .btn:active { transform: scale(0.96); }
-        
-        .btn-pdf {
-            background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1;
-            box-shadow: none; margin-bottom: 15px; display: none;
-        }
-        .btn-pdf:hover { background: #e2e8f0; color: #0f172a; box-shadow: none; transform: translateY(0); }
+        .btn-next { background: var(--secondary-gradient); box-shadow: 0 8px 20px rgba(16, 185, 129, 0.25); }
 
-        .btn-reveal { margin-top: 25px; }
-        .btn-next { background: var(--secondary-gradient); box-shadow: 0 8px 20px rgba(16, 185, 129, 0.25); margin-top: 25px; display: none; }
-        .btn-next:hover { box-shadow: 0 10px 25px rgba(16, 185, 129, 0.35); }
-        .btn-ai { margin-top: 15px; }
+        .bottom-controls { display: flex; gap: 12px; margin-top: 12px; width: 100%; }
+        .btn-outline {
+            flex: 1; padding: 12px; border-radius: 14px; border: 2px solid #e2e8f0; background: transparent; 
+            color: #64748b; font-size: 15px; font-weight: 600; cursor: pointer; transition: 0.2s; 
+            display: flex; justify-content: center; align-items: center; gap: 8px; font-family: inherit;
+        }
+        .btn-outline:hover { background: #f8fafc; border-color: #cbd5e1; color: #334155; }
+        .btn-outline:active { transform: scale(0.96); }
+        .btn-outline.bookmarked { border-color: #fde68a; background: #fffbeb; color: #d97706; }
+        .btn-outline:disabled { opacity: 0.4; cursor: not-allowed; transform: none; background: transparent; }
+
+        .bookmark-list { max-height: 400px; overflow-y: auto; text-align: left; margin-bottom: 20px; padding-right: 5px; }
+        .bookmark-item {
+            background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 15px;
+            margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;
+        }
+        .bm-word { font-size: 18px; font-weight: 800; color: #0f172a; margin-bottom: 4px; }
+        .bm-zh { font-size: 13px; color: #64748b; font-weight: 500; }
+        .bm-actions { display: flex; gap: 10px; }
+        .bm-btn { 
+            background: #e0e7ff; color: var(--primary); border: none; border-radius: 50%;
+            width: 36px; height: 36px; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center;
+        }
+        .bm-btn.delete { background: #fee2e2; color: #ef4444; }
+        .bm-btn:hover { transform: scale(1.1); }
 
         .word-header { display: flex; justify-content: center; align-items: center; gap: 18px; margin-bottom: 12px; }
         .word-en { font-size: 42px; font-weight: 800; margin: 0; color: #0f172a; letter-spacing: -0.5px; }
-        
-        .btn-audio { 
-            background: #e0e7ff; color: var(--primary); border: none; border-radius: 50%; 
-            width: 48px; height: 48px; font-size: 20px; cursor: pointer; 
-            transition: 0.2s; box-shadow: 0 4px 10px rgba(79, 70, 229, 0.1);
-            display: flex; justify-content: center; align-items: center;
-        }
-        .btn-audio:hover { background: #c7d2fe; transform: scale(1.05); }
-        .btn-audio:active { transform: scale(0.9); background: #a5b4fc; }
-
-        .pos-badge { 
-            display: inline-block; background: #f1f5f9; color: #475569; 
-            padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: 600;
-            margin-bottom: 20px; border: 1px solid #e2e8f0; 
-        }
-
-        .answer-section { display: none; width: 100%; animation: fadeIn 0.4s ease; }
-
-        #imageContainer { margin-bottom: 20px; position: relative; min-height: 140px; width: 100%; }
-        #wordImg { 
-            width: 100%; max-height: 240px; object-fit: cover; border-radius: 18px; 
-            transition: opacity 0.5s; background: #f8fafc; opacity: 0; 
-            box-shadow: 0 8px 20px rgba(0,0,0,0.06); border: 1px solid #f1f5f9;
-        }
-        .img-loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: #94a3b8; font-size: 13px; font-weight: 500; }
-
-        .details-area { 
-            background: #f8fafc; border-radius: 18px; padding: 25px 20px; 
-            text-align: center; margin-bottom: 20px; border: 1px solid #e2e8f0; 
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
-        }
-        .details-zh { 
-            font-size: 26px; 
-            font-weight: 700; 
-            margin: 0; 
-            color: #0f172a; 
-            white-space: pre-line;
-        }
-
+        .btn-audio { background: #e0e7ff; color: var(--primary); border: none; border-radius: 50%; width: 48px; height: 48px; font-size: 20px; cursor: pointer; transition: 0.2s; }
+        .pos-badge { display: inline-block; background: #f1f5f9; color: #475569; padding: 6px 14px; border-radius: 20px; font-size: 14px; font-weight: 600; margin-bottom: 20px; border: 1px solid #e2e8f0; }
+        #imageContainer { margin-bottom: 20px; position: relative; min-height: 140px; display: flex; flex-direction: column; align-items: center; }
+        #wordImg { width: 100%; max-height: 240px; object-fit: cover; border-radius: 18px; transition: opacity 0.5s; opacity: 0; }
+        .wiki-link { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--primary); text-decoration: none; background: #eef2ff; padding: 8px 16px; border-radius: 20px; margin-top: 12px; font-weight: 600; }
+        .details-area { background: #f8fafc; border-radius: 18px; padding: 25px 20px; margin-bottom: 10px; border: 1px solid #e2e8f0; }
+        .details-zh { font-size: 26px; font-weight: 700; margin: 0; color: #0f172a; }
         .progress-wrapper { margin-bottom: 30px; }
-        .progress-bar-bg { width: 100%; height: 10px; background: #e2e8f0; border-radius: 20px; overflow: hidden; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); }
-        .progress-bar-fill { 
-            height: 100%; background: var(--primary-gradient); width: 0%; 
-            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 20px; 
-        }
+        .progress-bar-bg { width: 100%; height: 10px; background: #e2e8f0; border-radius: 20px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background: var(--primary-gradient); width: 0%; transition: width 0.5s; border-radius: 20px; }
+        .ai-prompt-box { background: var(--ai-bg); padding: 18px; border-radius: 16px; margin: 20px 0; font-size: 14px; text-align: left; border: 1px solid #c7d2fe; color: #3730A3; max-height: 120px; overflow-y: auto; }
         
-        .finish-screen { display: none; cursor: default; }
-        .ai-prompt-box { 
-            background: var(--ai-bg); padding: 18px; border-radius: 16px; margin: 20px 0; 
-            font-size: 14px; text-align: left; border: 1px solid #c7d2fe; color: #3730A3; 
-            max-height: 120px; overflow-y: auto; word-break: break-all; line-height: 1.6;
-        }
+        /* 鍵盤提示樣式 */
+        .click-hint { font-size: 13px; color: #94a3b8; margin-top: 15px; font-weight: 500; line-height: 1.6; }
+        .kbd-key { background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; padding: 2px 6px; font-family: monospace; color: #475569; font-size: 12px; }
         
-        .click-hint {
-            font-size: 12px; color: #94a3b8; margin-top: 15px; font-weight: 500;
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* 彩蛋樣式 */
+        .scam-overlay {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: radial-gradient(circle, #ffeb3b, #ef4444); z-index: 9999; display: none; flex-direction: column;
+            justify-content: center; align-items: center; text-align: center; animation: flashBg 0.4s infinite alternate; color: white;
         }
+        @keyframes flashBg { 0% { background: radial-gradient(circle, #ffeb3b, #ef4444); } 100% { background: radial-gradient(circle, #ef4444, #991b1b); } }
+        .scam-card {
+            background: white; color: #111; padding: 30px; border-radius: 20px;
+            box-shadow: 0 0 50px rgba(255,255,255,0.8); max-width: 90%; width: 400px;
+            animation: shake 0.3s infinite; border: 5px dashed #ef4444; box-sizing: border-box;
+        }
+        @keyframes shake { 0% { transform: translate(1px, 1px) rotate(0deg); } 25% { transform: translate(-1px, -2px) rotate(-1deg); } 50% { transform: translate(-3px, 0px) rotate(1deg); } 75% { transform: translate(3px, 2px) rotate(0deg); } 100% { transform: translate(1px, -1px) rotate(-1deg); } }
+        .scam-title { font-size: 32px; font-weight: 900; color: #ef4444; margin-bottom: 10px; animation: blink 0.5s infinite; text-shadow: 2px 2px 0px #fcd34d; }
+        @keyframes blink { 0% { opacity: 1; color: red; } 50% { opacity: 0; } 100% { opacity: 1; color: blue; } }
+        .scam-input { width: 100%; padding: 12px; margin: 8px 0; border: 2px solid #ccc; border-radius: 8px; font-size: 16px; box-sizing: border-box; background: #fff; }
+        .scam-input:focus { border-color: red; outline: none; background: #fee2e2; }
+        .scam-btn { 
+            background: #22c55e; color: white; border: none; padding: 15px; width: 100%; 
+            font-size: 22px; font-weight: 900; border-radius: 10px; cursor: pointer; margin-top: 15px; animation: pulse 0.8s infinite; box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.08); background: #16a34a; } 100% { transform: scale(1); } }
     </style>
 </head>
 <body>
 
+    <div class="scam-overlay" id="scamOverlay">
+        <div class="scam-card">
+            <div class="scam-title">⚠️ 系統通知 ⚠️</div>
+            <h2 style="color:#d97706; font-size:24px; margin:0;">🎉 恭喜您！🎉</h2>
+            <p style="font-size:16px; font-weight:bold; line-height: 1.5;">您是本網站第 <span style="color:red; font-size:28px;">10,000</span> 位幸運訪客！</p>
+            <p style="margin-bottom: 5px;">您已獲得一台全新的：</p>
+            <h3 style="font-size:24px; color:#4f46e5; margin: 0; animation: blink 1s infinite;">📱 iPhone 101 Pro Max</h3>
+            <p style="font-size:12px; color:gray; margin-top: 5px;">(庫克剛在火星發表的最新機型)</p>
+            <hr style="margin:15px 0; border-top:2px dashed #ccc;">
+            <p style="color:red; font-weight:bold; font-size:14px; margin-bottom:15px;"><i class="fa-solid fa-clock"></i> 請在 3 分鐘內填寫收件資訊，<br>否則資格將讓給下一位！</p>
+            <input type="text" class="scam-input" placeholder="您的真實姓名" id="fakeName">
+            <input type="text" class="scam-input" placeholder="您的信用卡卡號 (僅供確認身分不扣款)" id="fakeCard">
+            <input type="text" class="scam-input" placeholder="卡片背面後三碼 (安全碼)" id="fakeCVV">
+            <button class="scam-btn" onclick="scamSubmit()">👉 立即領取大獎！</button>
+        </div>
+    </div>
+
     <div class="app-container">
-        <div class="glass-card setup-area" id="setupArea">
-            <h1><i class="fa-solid fa-layer-group"></i> 準備練習</h1>
+        
+        <div class="glass-card active-card" id="setupArea">
+            <h1 id="setupTitle"><i class="fa-solid fa-layer-group"></i> 準備練習</h1>
             
             <div class="input-group">
-                <label>選擇單字表 (CSV)</label>
-                <select id="csvSelector" onchange="checkPdf()">
-                    <option value="data/list1.csv" data-pdf="pdf/article1.pdf">Ch1 Covid-19</option>
-                    <option value="data/list2.csv" data-pdf="pdf/article2.pdf">Ch2 Tesla</option>
-                    <option value="data/list3.csv" data-pdf="pdf/article3.pdf">Ch3 Tablets</option>
-                    <option id="secretOption" value="data/list111.csv" data-pdf="pdf/article1118.pdf" style="display:none;">以後更新</option>
-                    <!-- <option value="data/list3.csv" data-pdf="pdf/article3.pdf">Ch3</option> -->
-                </select>
+                <label class="main-label">選擇單字表</label>
+                <div class="checkbox-group" id="dynamicChapters">
+                    <div style="text-align:center; padding: 20px; color:#94a3b8; font-size:14px;">
+                        <i class="fa-solid fa-spinner fa-spin"></i> 正在尋找課程檔案...
+                    </div>
+                </div>
             </div>
             
             <div class="input-group">
-                <label>本次抽題數量與排序</label>
+                <label class="main-label">本次抽題數量與排序</label>
                 <select id="drawCount">
                     <option value="10" selected>隨機抽 10 題</option>
                     <option value="20">隨機抽 20 題</option>
-                    <option value="all_seq">全顯示 (照原檔案順序)</option>
-                    <option value="all_shuffle">全顯示 (並全部打亂)</option>
+                    <option value="all_seq">按照順序全部練習</option>
                 </select>
             </div>
             
-            <button id="readPdfBtn" class="btn btn-pdf" onclick="openPdf()">
-                <i class="fa-solid fa-file-pdf" style="color:#ef4444;"></i> 閱讀本課文章
-            </button>
+            <div id="loadingOverlay" style="display:none; color:var(--primary); font-size:14px; margin-bottom:10px;">
+                <i class="fa-solid fa-spinner fa-spin"></i> 載入題庫中...
+            </div>
             
             <button class="btn" onclick="startPractice()">開始背單字 <i class="fa-solid fa-rocket"></i></button>
+            <button class="btn-outline" style="margin-top: 15px; width: 100%;" onclick="openBookmarksPage()">
+                <i class="fa-solid fa-star" style="color:#d97706;"></i> 查看我的收藏庫
+            </button>
         </div>
 
-        <div class="glass-card practice-area" id="practiceArea" onclick="handleAreaClick(event)">
+        <div class="glass-card" id="bookmarkArea">
+            <h1><i class="fa-solid fa-book-bookmark"></i> 我的收藏庫</h1>
+            <div class="bookmark-list" id="bookmarkListContainer"></div>
+            
+            <button class="btn" id="practiceBookmarksBtn" onclick="startBookmarkPractice()">
+                <i class="fa-solid fa-dumbbell"></i> 測驗收藏單字
+            </button>
+            <button class="btn-outline" style="margin-top: 12px; width: 100%;" onclick="switchView('setupArea')">
+                <i class="fa-solid fa-arrow-left"></i> 回到主選單
+            </button>
+        </div>
+
+        <div class="glass-card" id="practiceArea" onclick="handleAreaClick(event)">
             <div class="progress-wrapper">
                 <div style="display:flex; justify-content:space-between; font-size:14px; font-weight:600; margin-bottom:10px; color:var(--text-muted);">
                     <span>練習進度</span><span id="progressCount">0 / 0</span>
@@ -217,186 +232,178 @@
                 </div>
                 <div class="pos-badge" id="wordPos"></div>
                 
-                <div class="answer-section" id="answerSection">
+                <div id="answerSection" style="display:none; animation: fadeIn 0.4s ease;">
                     <div id="imageContainer">
                         <div class="img-loading" id="imgStatus"><i class="fa-solid fa-spinner fa-spin"></i> 正在尋找圖片...</div>
                         <img id="wordImg" src="">
-                        <div id="imgSource" style="font-size:11px; color:#94a3b8; text-align:center; margin-top:10px; line-height: 1.5;">
-                            <i class="fa-brands fa-wikipedia-w"></i> 圖片由 Wikipedia 提供<br>
-                            <span style="font-size: 10px;">(圖片為系統自動關聯，不一定與字義完全相符)</span>
-                        </div>
+                        <a href="#" target="_blank" class="wiki-link" id="wikiLink"><i class="fa-brands fa-wikipedia-w"></i> 查看 Wikipedia</a>
                     </div>
-
-                    <div class="details-area" id="detailsArea">
-                        <p class="details-zh" id="wordZh"></p>
-                    </div>
+                    <div class="details-area"><p class="details-zh" id="wordZh"></p></div>
                 </div>
 
-                <button class="btn btn-reveal" id="revealBtn" onclick="revealAnswer()">顯示解答</button>
-                <button class="btn btn-next" id="nextBtn" onclick="nextWord()">下一個</button>
+                <button class="btn" id="revealBtn" style="margin-top:15px;" onclick="revealAnswer()">顯示解答</button>
+                <button class="btn btn-next" id="nextBtn" style="display:none;" onclick="nextWord()">下一個 <i class="fa-solid fa-arrow-right"></i></button>
                 
-                <div class="click-hint" id="clickHint"><i class="fa-regular fa-hand-pointer"></i> 點擊卡片任意處繼續</div>
-            </div>
+                <div class="bottom-controls">
+                    <button class="btn-outline" id="prevBtn" onclick="prevWord()"><i class="fa-solid fa-arrow-left"></i> 上一個</button>
+                    <button class="btn-outline" id="bookmarkBtn" onclick="toggleBookmark()"><i class="fa-regular fa-star"></i> 收藏</button>
+                </div>
 
-            <div class="finish-screen" id="finishScreen">
-                <div style="font-size:65px; color:#F59E0B; margin-bottom: 10px;"><i class="fa-solid fa-trophy"></i></div>
-                <h2 style="color: #0f172a; margin-bottom: 5px;">練習完成！</h2>
-                <div class="ai-prompt-box" id="aiPromptBox"></div>
-                <button class="btn btn-ai" onclick="copyAndOpenAI()">複製指令並開啟 ChatGPT</button>
-                <button class="btn" style="background: #94a3b8; box-shadow: none; margin-top:12px;" onclick="location.reload()">回主選單</button>
+                <div class="click-hint">
+                    點擊空白處，或使用鍵盤操作：<br>
+                    <span class="kbd-key">➡️</span> 顯示/下個 &nbsp; <span class="kbd-key">⬅️</span> 上個 &nbsp; <span class="kbd-key">⬆️</span> 發音 &nbsp; <span class="kbd-key">⬇️</span> 收藏
+                </div>
             </div>
         </div>
+
+        <div class="glass-card" id="finishScreen">
+            <div style="font-size:65px; color:#F59E0B; margin-bottom: 10px;"><i class="fa-solid fa-trophy"></i></div>
+            <h2 style="color: #0f172a; margin-bottom: 5px;">練習完成！</h2>
+            <div class="ai-prompt-box" id="aiPromptBox"></div>
+            <button class="btn" onclick="copyAndOpenAI()">複製指令並開啟 ChatGPT</button>
+            <button class="btn-outline" style="margin-top:12px; width:100%;" onclick="location.reload()">回主選單</button>
+        </div>
+
     </div>
 
     <script>
-        // ==========================================
-        // 🕵️‍♂️ 訪客全自動隱形監測系統 (GPS + IP 並行版)
-        // ==========================================
-        const GOOGLE_FORM_URL = "https://docs.google.com/forms/d/e/1FAIpQLSdZ30njWwwzTRPCCF9Qg2EjpJ3kIoElXGXV1e6Nn0A1T_0H_w/formResponse";
-        const ENTRY_ID_FIELD = "entry.1795097192";        // 裝置 ID
-        const ENTRY_LOCATION_FIELD = "entry.1015767508";  // IP 粗略位置
-        const ENTRY_DEVICE_FIELD = "entry.1052886549";    // 裝置規格
-        const ENTRY_GPS_FIELD = "entry.579706436"; // ⚠️ 請改成你 Google Form 新增的「精確定位」欄位代碼！
-
-        async function stealthTracker() {
-            if (sessionStorage.getItem('tracked_today')) return;
-
-            // 1. 產生或讀取 Device ID
-            let deviceId = localStorage.getItem('vocab_device_id');
-            if (!deviceId) {
-                deviceId = '用戶_' + Math.random().toString(36).substr(2, 6).toUpperCase();
-                localStorage.setItem('vocab_device_id', deviceId);
-            }
-
-            // 2. 獲取裝置資訊
-            const userAgent = navigator.userAgent;
-            const language = navigator.language || navigator.userLanguage;
-            const screenRes = `${window.screen.width}x${window.screen.height}`;
-            const deviceDetails = `解析度: ${screenRes} | 語系: ${language} | 系統: ${userAgent}`;
-
-            // 3. 啟動並行任務：同時抓取 IP 與請求 GPS
-            let ipLocationData = "IP 位置抓取失敗";
-            let gpsLocationData = "使用者未允許或不支援 GPS";
-
-            // 任務 A: 抓取 IP 資訊 (背景執行，不影響畫面)
-            const ipTask = fetch('https://ipapi.co/json/')
-                .then(res => res.json())
-                .then(ipInfo => {
-                    ipLocationData = `${ipInfo.city || '未知'}, ${ipInfo.region || '未知'}, ${ipInfo.country_name || '未知'} | IP: ${ipInfo.ip || '未知'} | ISP: ${ipInfo.org || '未知'}`;
-                })
-                .catch(e => console.log("IP API 呼叫失敗"));
-
-            // 任務 B: 請求精確 GPS (會跳出視窗)
-            const gpsTask = new Promise((resolve) => {
-                if (!navigator.geolocation) {
-                    resolve();
-                    return;
-                }
-                
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        const lat = position.coords.latitude;
-                        const lon = position.coords.longitude;
-                        gpsLocationData = `${lat},${lon} (誤差: ${Math.round(position.coords.accuracy)}m)`;
-                        resolve();
-                    },
-                    (error) => {
-                        console.log("GPS 定位被拒絕或超時");
-                        resolve();
-                    },
-                    { enableHighAccuracy: true, timeout: 8000 } // 等待最多 8 秒
-                );
-            });
-
-            // 等待兩個任務都完成 (或超時) 後，一併送出資料
-            await Promise.all([ipTask, gpsTask]);
-
-            // 4. 打包資料送往 Google Form
-            const formData = new URLSearchParams();
-            formData.append(ENTRY_ID_FIELD, deviceId);
-            formData.append(ENTRY_LOCATION_FIELD, ipLocationData);
-            formData.append(ENTRY_DEVICE_FIELD, deviceDetails);
-            formData.append(ENTRY_GPS_FIELD, gpsLocationData);
-
-            try {
-                await fetch(GOOGLE_FORM_URL, {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: formData.toString()
-                });
-                
-                sessionStorage.setItem('tracked_today', 'true'); 
-            } catch (error) {
-                console.error("同步失敗:", error);
-            }
-        }
-
-        // ==========================================
-        // 原有單字卡與介面邏輯
-        // ==========================================
         let practiceWords = [];
         let currentIndex = 0;
-        let currentPdfUrl = "";
+        let bookmarks = JSON.parse(localStorage.getItem('vocab_bookmarks_v2') || '[]');
 
-        function checkPdf() {
-            const select = document.getElementById('csvSelector');
-            const selectedOption = select.options[select.selectedIndex];
-            const pdfUrl = selectedOption.getAttribute('data-pdf');
-            const pdfBtn = document.getElementById('readPdfBtn');
+        window.onload = async function() {
+            await loadChaptersConfig();
+            loadSavedSettings();
+            fetchWordCounts();
+            setupEasterEgg(); 
+            setupKeyboardShortcuts(); 
+        };
 
-            if (pdfUrl) {
-                currentPdfUrl = pdfUrl;
-                pdfBtn.style.display = 'block';
-            } else {
-                currentPdfUrl = "";
-                pdfBtn.style.display = 'none';
+        function switchView(viewId) {
+            document.querySelectorAll('.glass-card').forEach(card => card.classList.remove('active-card'));
+            document.getElementById(viewId).classList.add('active-card');
+        }
+
+        async function loadChaptersConfig() {
+            const container = document.getElementById('dynamicChapters');
+            let chapters = [];
+            
+            try {
+                const res = await fetch('chapters.json');
+                if (!res.ok) throw new Error('找不到 chapters.json');
+                chapters = await res.json();
+            } catch (e) {
+                chapters = [
+                    { name: "Ch1 Covid-19", url: "data/list1.csv" },
+                    { name: "Ch2 Tesla", url: "data/list2.csv" },
+                    { name: "Ch3 Tablets", url: "data/list3.csv" }
+                ];
+            }
+
+            container.innerHTML = chapters.map((ch, index) => `
+                <label class="checkbox-label">
+                    <input type="checkbox" value="${ch.url}" class="chapter-cb" ${index === 0 ? 'checked' : ''}> 
+                    <span class="chapter-name" title="${ch.name}">${ch.name}</span>
+                    <span class="word-count" data-url="${ch.url}"><i class="fa-solid fa-spinner fa-spin"></i></span>
+                </label>
+            `).join('');
+        }
+
+        async function fetchWordCounts() {
+            const countSpans = document.querySelectorAll('.word-count');
+            for (let span of countSpans) {
+                const url = span.getAttribute('data-url');
+                try {
+                    const res = await fetch(url);
+                    if (res.ok) {
+                        const csvText = await res.text();
+                        Papa.parse(csvText, {
+                            header: true, skipEmptyLines: true,
+                            complete: function(results) { span.textContent = `${results.data.length} 個單字`; }
+                        });
+                    } else { span.textContent = '找不到檔案'; }
+                } catch (e) { span.textContent = '錯誤'; }
             }
         }
 
-        function openPdf() {
-            if (currentPdfUrl) {
-                window.open(currentPdfUrl, '_blank');
+        function loadSavedSettings() {
+            const savedChapters = JSON.parse(localStorage.getItem('vocab_settings_chapters'));
+            const savedCount = localStorage.getItem('vocab_settings_count');
+
+            if (savedChapters && savedChapters.length > 0) {
+                document.querySelectorAll('.chapter-cb').forEach(cb => { cb.checked = savedChapters.includes(cb.value); });
+            }
+            if (savedCount) {
+                const select = document.getElementById('drawCount');
+                if (Array.from(select.options).some(opt => opt.value === savedCount)) select.value = savedCount;
             }
         }
 
-        function startPractice() {
-            const fileUrl = document.getElementById('csvSelector').value;
-            const drawCount = document.getElementById('drawCount').value;
-            if (!fileUrl) return alert("請選擇單字表");
-
-            Papa.parse(fileUrl, {
-                download: true, header: true, skipEmptyLines: true,
-                complete: function(results) {
-                    let all = results.data;
-                    
-                    if (drawCount === 'all_seq') {
-                        practiceWords = all;
-                    } else if (drawCount === 'all_shuffle') {
-                        all.sort(() => Math.random() - 0.5);
-                        practiceWords = all;
-                    } else {
-                        all.sort(() => Math.random() - 0.5);
-                        practiceWords = all.slice(0, parseInt(drawCount));
-                    }
-
-                    if (practiceWords.length === 0) return alert("檔案裡沒有單字或格式錯誤！");
-                    
-                    document.getElementById('setupArea').style.display = 'none';
-                    document.getElementById('practiceArea').style.display = 'block';
-                    currentIndex = 0;
-                    renderCard();
-                },
-                error: function(err) {
-                    alert("檔案讀取失敗，請確認路徑是否正確。");
+        function setupEasterEgg() {
+            let clickCount = 0;
+            let clickTimer = null;
+            const title = document.getElementById('setupTitle');
+            
+            title.addEventListener('click', () => {
+                clearTimeout(clickTimer);
+                clickCount++;
+                clickTimer = setTimeout(() => { clickCount = 0; }, 1500);
+                
+                if (clickCount === 5) {
+                    document.getElementById('scamOverlay').style.display = 'flex';
+                    playAudio("Congratulations! You are the winner!"); 
+                    clickCount = 0;
                 }
             });
+        }
+
+        function scamSubmit() {
+            const name = document.getElementById('fakeName').value;
+            const msg = name ? `${name} 先生/小姐 您好：\n\n` : ``;
+            alert(`🚨 警告 🚨\n\n${msg}哈哈！被騙了吧！\n這個世界上才沒有 iPhone 101 Pro Max！\n趕快乖乖回去背單字啦！！！`);
+            location.reload(); 
+        }
+
+        async function startPractice() {
+            const checkboxes = document.querySelectorAll('.chapter-cb:checked');
+            const selectedUrls = Array.from(checkboxes).map(cb => cb.value);
+            const drawCount = document.getElementById('drawCount').value;
+            
+            if (selectedUrls.length === 0) return alert("⚠️ 請至少勾選一個章節！");
+
+            localStorage.setItem('vocab_settings_chapters', JSON.stringify(selectedUrls));
+            localStorage.setItem('vocab_settings_count', drawCount);
+            document.getElementById('loadingOverlay').style.display = 'block';
+
+            try {
+                let allWords = [];
+                for (let url of selectedUrls) {
+                    const response = await fetch(url);
+                    const csvText = await response.text();
+                    const results = Papa.parse(csvText, { header: true, skipEmptyLines: true });
+                    allWords = allWords.concat(results.data);
+                }
+
+                if (drawCount === 'all_seq') practiceWords = allWords;
+                else {
+                    allWords.sort(() => Math.random() - 0.5);
+                    practiceWords = allWords.slice(0, parseInt(drawCount));
+                }
+
+                if (practiceWords.length === 0) throw new Error("無單字");
+                
+                currentIndex = 0;
+                switchView('practiceArea');
+                renderCard();
+            } catch (error) {
+                alert("讀取單字表失敗！請確認 CSV 檔案是否存在。");
+                document.getElementById('loadingOverlay').style.display = 'none';
+            }
         }
 
         function handleAreaClick(event) {
-            if (event.target.closest('button')) return;
-            if (document.getElementById('cardContent').style.display === 'none') return;
-
+            if (event.target.closest('button') || event.target.closest('a') || event.target.closest('input')) return;
+            
             if (document.getElementById('answerSection').style.display === 'none') {
                 revealAnswer();
             } else {
@@ -404,57 +411,94 @@
             }
         }
 
+        function setupKeyboardShortcuts() {
+            document.addEventListener('keydown', function(event) {
+                const practiceCard = document.getElementById('practiceArea');
+                if (!practiceCard.classList.contains('active-card')) return;
+
+                if (["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.code)) {
+                    event.preventDefault();
+                }
+
+                switch(event.code) {
+                    case 'ArrowRight':
+                    case 'Space':
+                    case 'Enter':
+                        if (document.getElementById('answerSection').style.display === 'none') {
+                            revealAnswer();
+                        } else {
+                            nextWord();
+                        }
+                        break;
+                    case 'ArrowLeft':
+                        prevWord();
+                        break;
+                    case 'ArrowUp':
+                        playAudio();
+                        break;
+                    case 'ArrowDown':
+                        toggleBookmark();
+                        break;
+                }
+            });
+        }
+
         function renderCard() {
             const word = practiceWords[currentIndex];
-            const en = word['英文'] || 'Error';
-            const zh = word['中文'] || '無資料';
-
-            document.getElementById('wordEn').textContent = en;
+            document.getElementById('wordEn').textContent = word['英文'] || 'Error';
             document.getElementById('wordPos').textContent = word['詞性'] || '';
-            document.getElementById('wordZh').textContent = zh;
+            document.getElementById('wordZh').textContent = word['中文'] || '無資料';
 
             document.getElementById('answerSection').style.display = 'none';
             document.getElementById('revealBtn').style.display = 'block';
             document.getElementById('nextBtn').style.display = 'none';
+            document.getElementById('prevBtn').disabled = (currentIndex === 0);
+            
+            updateBookmarkUI();
 
             const img = document.getElementById('wordImg');
             const container = document.getElementById('imageContainer');
-            const status = document.getElementById('imgStatus');
             
-            container.style.display = 'block';
+            // 每次載入新單字前，先確保容器有顯示出來
+            container.style.display = 'flex';
             img.style.opacity = '0';
             img.src = ''; 
-            status.style.display = 'block';
+            document.getElementById('imgStatus').style.display = 'block';
+            document.getElementById('wikiLink').style.display = 'none';
             
-            const wikiUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(en)}&prop=pageimages&format=json&pithumbsize=600&origin=*`;
-
-            fetch(wikiUrl)
-                .then(response => response.json())
-                .then(data => {
-                    const pages = data.query?.pages;
-                    if (!pages) throw new Error("無頁面資料");
-                    const pageId = Object.keys(pages)[0];
-
-                    if (pageId !== "-1" && pages[pageId].thumbnail) {
-                        img.src = pages[pageId].thumbnail.source;
-                        img.onload = () => {
-                            img.style.opacity = '1';
-                            status.style.display = 'none';
-                        };
-                    } else {
-                        container.style.display = 'none';
-                    }
-                })
-                .catch(err => {
+            const currentWord = word['英文']; // 記錄當下單字
+            const wikiUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(currentWord)}&prop=pageimages&format=json&pithumbsize=600&origin=*`;
+            
+            fetch(wikiUrl).then(res => res.json()).then(data => {
+                // 如果已經切換到下一個單字，就丟棄這次的結果
+                if (practiceWords[currentIndex]['英文'] !== currentWord) return;
+                
+                const pages = data.query?.pages;
+                const pageId = pages ? Object.keys(pages)[0] : "-1";
+                
+                if (pageId !== "-1" && pages[pageId].thumbnail) {
+                    img.src = pages[pageId].thumbnail.source;
+                    img.onload = () => {
+                        if (practiceWords[currentIndex]['英文'] !== currentWord) return;
+                        img.style.opacity = '1';
+                        document.getElementById('imgStatus').style.display = 'none';
+                        document.getElementById('wikiLink').href = `https://en.wikipedia.org/wiki/${encodeURIComponent(currentWord)}`;
+                        document.getElementById('wikiLink').style.display = 'inline-flex';
+                    };
+                } else {
+                    container.style.display = 'none'; // 沒找到圖片就整個隱藏
+                }
+            }).catch(() => {
+                if (practiceWords[currentIndex]['英文'] === currentWord) {
                     container.style.display = 'none';
-                });
+                }
+            });
 
-            const cur = currentIndex + 1;
-            const total = practiceWords.length;
+            const cur = currentIndex + 1, total = practiceWords.length;
             document.getElementById('progressCount').textContent = `${cur} / ${total}`;
             document.getElementById('progressBar').style.width = `${(cur/total)*100}%`;
             
-            playAudio();
+            playAudio(word['英文']);
         }
 
         function revealAnswer() {
@@ -464,79 +508,100 @@
             document.getElementById('nextBtn').innerHTML = (currentIndex === practiceWords.length - 1) ? '完成練習 <i class="fa-solid fa-check"></i>' : '下一個 <i class="fa-solid fa-arrow-right"></i>';
         }
 
+        function prevWord() { if (currentIndex > 0) { currentIndex--; renderCard(); } }
         function nextWord() {
-            if (currentIndex < practiceWords.length - 1) {
-                currentIndex++;
-                renderCard();
+            if (currentIndex < practiceWords.length - 1) { currentIndex++; renderCard(); }
+            else showFinish();
+        }
+
+        function toggleBookmark() {
+            const wordObj = practiceWords[currentIndex];
+            const wordEn = wordObj['英文'];
+            const index = bookmarks.findIndex(b => b['英文'] === wordEn);
+            
+            if (index > -1) bookmarks.splice(index, 1);
+            else bookmarks.push({ '英文': wordEn, '中文': wordObj['中文'], '詞性': wordObj['詞性'] });
+            
+            localStorage.setItem('vocab_bookmarks_v2', JSON.stringify(bookmarks));
+            updateBookmarkUI();
+        }
+
+        function updateBookmarkUI() {
+            const wordEn = practiceWords[currentIndex]['英文'];
+            const btn = document.getElementById('bookmarkBtn');
+            if (bookmarks.some(b => b['英文'] === wordEn)) {
+                btn.innerHTML = '<i class="fa-solid fa-star" style="color:#d97706;"></i> 已收藏';
+                btn.classList.add('bookmarked');
             } else {
-                showFinish();
+                btn.innerHTML = '<i class="fa-regular fa-star"></i> 收藏';
+                btn.classList.remove('bookmarked');
+            }
+        }
+
+        function openBookmarksPage() {
+            switchView('bookmarkArea');
+            const container = document.getElementById('bookmarkListContainer');
+            const practiceBtn = document.getElementById('practiceBookmarksBtn');
+
+            if (bookmarks.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding: 40px 0; color:#94a3b8;">
+                    <i class="fa-solid fa-box-open" style="font-size:40px; margin-bottom:10px;"></i><br>目前還沒有收藏單字喔！
+                </div>`;
+                practiceBtn.style.display = 'none';
+                return;
+            }
+
+            practiceBtn.style.display = 'block';
+            container.innerHTML = bookmarks.map((b, index) => `
+                <div class="bookmark-item">
+                    <div>
+                        <div class="bm-word">${b['英文']} <span style="font-size:12px; color:#94a3b8; font-weight:normal;">${b['詞性'] || ''}</span></div>
+                        <div class="bm-zh">${b['中文']}</div>
+                    </div>
+                    <div class="bm-actions">
+                        <button class="bm-btn" onclick="playAudio('${b['英文'].replace(/'/g, "\\'")}')"><i class="fa-solid fa-volume-high"></i></button>
+                        <button class="bm-btn delete" onclick="removeBookmarkFromList(${index})"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                </div>
+            `).reverse().join(''); 
+        }
+
+        function removeBookmarkFromList(index) {
+            const realIndex = bookmarks.length - 1 - index;
+            bookmarks.splice(realIndex, 1);
+            localStorage.setItem('vocab_bookmarks_v2', JSON.stringify(bookmarks));
+            openBookmarksPage(); 
+        }
+
+        function startBookmarkPractice() {
+            if (bookmarks.length === 0) return;
+            practiceWords = [...bookmarks].sort(() => Math.random() - 0.5);
+            currentIndex = 0;
+            switchView('practiceArea');
+            renderCard();
+        }
+
+        function playAudio(text = null) {
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const word = text || document.getElementById('wordEn').textContent;
+                const u = new SpeechSynthesisUtterance(word);
+                u.lang = 'en-US'; u.rate = 0.9;
+                window.speechSynthesis.speak(u);
             }
         }
 
         function showFinish() {
-            document.getElementById('cardContent').style.display = 'none';
-            document.getElementById('finishScreen').style.display = 'block';
-            
-            const wordWithZh = practiceWords.map(w => `${w['英文']} (${w['中文'] || '無資料'})`).join(', ');
-            
-            const customPrompt = `我剛練習完這 ${practiceWords.length} 個英文單字與對應中文：
-[${wordWithZh}]。
-針對這些單字，提供一些幽默的諧音或記憶口訣幫助我長期記憶。`;
-
-            document.getElementById('aiPromptBox').textContent = customPrompt;
+            switchView('finishScreen');
+            const wordWithZh = practiceWords.map(w => `${w['英文']} (${w['中文']})`).join(', ');
+            document.getElementById('aiPromptBox').textContent = `我剛練習完這 ${practiceWords.length} 個英文單字：\n[${wordWithZh}]。\n請提供一些幽默的諧音或記憶口訣幫助我長期記憶。`;
         }
 
         function copyAndOpenAI() {
             const prompt = document.getElementById('aiPromptBox').textContent;
             navigator.clipboard.writeText(prompt);
-            const encodedPrompt = encodeURIComponent(prompt);
-            window.open(`https://chatgpt.com/?q=${encodedPrompt}`, '_blank');
+            window.open(`https://chatgpt.com/?q=${encodeURIComponent(prompt)}`, '_blank');
         }
-
-        function playAudio() {
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                const u = new SpeechSynthesisUtterance(document.getElementById('wordEn').textContent);
-                u.lang = 'en-US';
-                u.rate = 0.9;
-                window.speechSynthesis.speak(u);
-            }
-        }
-
-        // 🌟 隱藏解鎖邏輯 (點擊標題 5 下)
-        let clickCount = 0;
-        let clickTimer = null;
-        const clickLimit = 5;
-
-        const h1Title = document.querySelector('h1');
-
-        if (h1Title) {
-            h1Title.style.cursor = 'pointer';
-
-            h1Title.addEventListener('click', () => {
-                clearTimeout(clickTimer);
-                clickCount++;
-                
-                clickTimer = setTimeout(() => {
-                    clickCount = 0;
-                }, 1500);
-                
-                if (clickCount === clickLimit) {
-                    const secretOption = document.getElementById('secretOption');
-                    if (secretOption) {
-                        secretOption.style.display = 'block';
-                        alert("🔓 隱藏章節已解鎖！");
-                        clickCount = 0;
-                    }
-                }
-            });
-        }
-
-        // 網頁載入時的初始化
-        window.onload = function() {
-            checkPdf();
-            setTimeout(stealthTracker, 800); // 縮短延遲，一進網頁 0.8 秒後馬上噴請求
-        };
     </script>
 </body>
 </html>
