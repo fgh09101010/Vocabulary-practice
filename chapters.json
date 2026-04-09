@@ -1,0 +1,22 @@
+[
+  {
+    "name": "Ch1 Covid-19 單字表",
+    "url": "data/Ch1 Covid-19.csv"
+  },
+  {
+    "name": "Ch2 Tesla 單字表",
+    "url": "data/Ch2 Tesla.csv"
+  },
+  {
+    "name": "Ch3 Tablets 單字表",
+    "url": "data/Ch3 Tablets.csv"
+  },
+  {
+    "name": "Ch4 TouchScreen 單字表",
+    "url": "data/Ch4 TouchScreen.csv"
+  },
+  {
+    "name": "Ch5 Unmanned Aerial Vehicle 單字表",
+    "url": "data/Ch5 Unmanned Aerial Vehicle.csv"
+  }
+]
