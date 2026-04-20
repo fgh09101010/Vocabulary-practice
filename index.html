@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
     <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3534/3534033.png" type="image/png">
-    
     <title>極致單字卡 | 專屬單字練功房</title>
     <meta name="description" content="幫助你快速記憶英文單字的專屬練功房，支援發音、圖片記憶與 AI 聯想口訣！">
 
@@ -138,7 +137,6 @@
         .progress-bar-fill { height: 100%; background: var(--primary-gradient); width: 0%; transition: width 0.5s; border-radius: 20px; }
         .ai-prompt-box { background: var(--ai-bg); padding: 18px; border-radius: 16px; margin: 20px 0; font-size: 14px; text-align: left; border: 1px solid #c7d2fe; color: #3730A3; max-height: 120px; overflow-y: auto; }
         
-        /* 鍵盤提示樣式 */
         .click-hint { font-size: 13px; color: #94a3b8; margin-top: 15px; font-weight: 500; line-height: 1.6; }
         .kbd-key { background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; padding: 2px 6px; font-family: monospace; color: #475569; font-size: 12px; }
         
@@ -147,11 +145,11 @@
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
-        /* 彩蛋樣式 */
         .scam-overlay {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             background: radial-gradient(circle, #ffeb3b, #ef4444); z-index: 9999; display: none; flex-direction: column;
             justify-content: center; align-items: center; text-align: center; animation: flashBg 0.4s infinite alternate; color: white;
+            font-family: 'Arial', sans-serif;
         }
         @keyframes flashBg { 0% { background: radial-gradient(circle, #ffeb3b, #ef4444); } 100% { background: radial-gradient(circle, #ef4444, #991b1b); } }
         .scam-card {
@@ -196,7 +194,7 @@
             <h1 id="setupTitle"><i class="fa-solid fa-layer-group"></i> 準備練習</h1>
             
             <div class="input-group">
-                <label class="main-label">選擇單字表</label>
+                <label class="main-label">選擇單字表 (動態載入)</label>
                 <div class="checkbox-group" id="dynamicChapters">
                     <div style="text-align:center; padding: 20px; color:#94a3b8; font-size:14px;">
                         <i class="fa-solid fa-spinner fa-spin"></i> 正在尋找課程檔案...
@@ -209,6 +207,7 @@
                 <select id="drawCount">
                     <option value="10" selected>隨機抽 10 題</option>
                     <option value="20">隨機抽 20 題</option>
+                    <option value="all_shuffle">全部題目隨機</option>
                     <option value="all_seq">按照順序全部練習</option>
                 </select>
             </div>
@@ -295,6 +294,7 @@
         let practiceWords = [];
         let currentIndex = 0;
         let bookmarks = JSON.parse(localStorage.getItem('vocab_bookmarks_v2') || '[]');
+        let currentImageFetch = null;
 
         window.onload = async function() {
             await loadChaptersConfig();
@@ -312,22 +312,16 @@
         async function loadChaptersConfig() {
             const container = document.getElementById('dynamicChapters');
             let chapters = [];
-            
             try {
                 const res = await fetch('chapters.json');
                 if (!res.ok) throw new Error('找不到 chapters.json');
                 chapters = await res.json();
             } catch (e) {
-                chapters = [
-                    { name: "Ch1 Covid-19", url: "data/list1.csv" },
-                    { name: "Ch2 Tesla", url: "data/list2.csv" },
-                    { name: "Ch3 Tablets", url: "data/list3.csv" }
-                ];
+                chapters = [{ name: "Ch1 Covid-19", url: "data/list1.csv" },{ name: "Ch2 Tesla", url: "data/list2.csv" },{ name: "Ch3 Tablets", url: "data/list3.csv" }];
             }
-
             container.innerHTML = chapters.map((ch, index) => `
                 <label class="checkbox-label">
-                    <input type="checkbox" value="${ch.url}" class="chapter-cb" ${index === 0 ? 'checked' : ''}> 
+                    <input type="checkbox" value="${ch.url}" class="chapter-cb"> 
                     <span class="chapter-name" title="${ch.name}">${ch.name}</span>
                     <span class="word-count" data-url="${ch.url}"><i class="fa-solid fa-spinner fa-spin"></i></span>
                 </label>
@@ -342,10 +336,7 @@
                     const res = await fetch(url);
                     if (res.ok) {
                         const csvText = await res.text();
-                        Papa.parse(csvText, {
-                            header: true, skipEmptyLines: true,
-                            complete: function(results) { span.textContent = `${results.data.length} 個單字`; }
-                        });
+                        Papa.parse(csvText, { header: true, skipEmptyLines: true, complete: function(results) { span.textContent = `${results.data.length} 個單字`; } });
                     } else { span.textContent = '找不到檔案'; }
                 } catch (e) { span.textContent = '錯誤'; }
             }
@@ -354,48 +345,27 @@
         function loadSavedSettings() {
             const savedChapters = JSON.parse(localStorage.getItem('vocab_settings_chapters'));
             const savedCount = localStorage.getItem('vocab_settings_count');
-
-            if (savedChapters && savedChapters.length > 0) {
-                document.querySelectorAll('.chapter-cb').forEach(cb => { cb.checked = savedChapters.includes(cb.value); });
-            }
-            if (savedCount) {
-                const select = document.getElementById('drawCount');
-                if (Array.from(select.options).some(opt => opt.value === savedCount)) select.value = savedCount;
-            }
+            if (savedChapters) { document.querySelectorAll('.chapter-cb').forEach(cb => { cb.checked = savedChapters.includes(cb.value); }); }
+            if (savedCount) { const select = document.getElementById('drawCount'); if (Array.from(select.options).some(opt => opt.value === savedCount)) select.value = savedCount; }
         }
 
         function setupEasterEgg() {
-            let clickCount = 0;
-            let clickTimer = null;
-            const title = document.getElementById('setupTitle');
-            
-            title.addEventListener('click', () => {
+            let clickCount = 0, clickTimer = null;
+            document.getElementById('setupTitle').addEventListener('click', () => {
                 clearTimeout(clickTimer);
                 clickCount++;
                 clickTimer = setTimeout(() => { clickCount = 0; }, 1500);
-                
-                if (clickCount === 5) {
-                    document.getElementById('scamOverlay').style.display = 'flex';
-                    playAudio("Congratulations! You are the winner!"); 
-                    clickCount = 0;
-                }
+                if (clickCount === 5) { document.getElementById('scamOverlay').style.display = 'flex'; playAudio("Congratulations! You are the winner!"); clickCount = 0; }
             });
         }
 
-        function scamSubmit() {
-            const name = document.getElementById('fakeName').value;
-            const msg = name ? `${name} 先生/小姐 您好：\n\n` : ``;
-            alert(`🚨 警告 🚨\n\n${msg}哈哈！被騙了吧！\n這個世界上才沒有 iPhone 101 Pro Max！\n趕快乖乖回去背單字啦！！！`);
-            location.reload(); 
-        }
+        function scamSubmit() { const name = document.getElementById('fakeName').value; const msg = name ? `${name} 先生/小姐 您好：\n\n` : ``; alert(`🚨 警告 🚨\n\n${msg}哈哈！被騙了吧！\n這個世界上才沒有 iPhone 101 Pro Max！\n趕快乖乖回去背單字啦！！！`); location.reload(); }
 
         async function startPractice() {
             const checkboxes = document.querySelectorAll('.chapter-cb:checked');
             const selectedUrls = Array.from(checkboxes).map(cb => cb.value);
             const drawCount = document.getElementById('drawCount').value;
-            
             if (selectedUrls.length === 0) return alert("⚠️ 請至少勾選一個章節！");
-
             localStorage.setItem('vocab_settings_chapters', JSON.stringify(selectedUrls));
             localStorage.setItem('vocab_settings_count', drawCount);
             document.getElementById('loadingOverlay').style.display = 'block';
@@ -403,230 +373,94 @@
             try {
                 let allWords = [];
                 for (let url of selectedUrls) {
-                    const response = await fetch(url);
-                    const csvText = await response.text();
+                    const response = await fetch(url), csvText = await response.text();
                     const results = Papa.parse(csvText, { header: true, skipEmptyLines: true });
                     allWords = allWords.concat(results.data);
                 }
 
-                if (drawCount === 'all_seq') practiceWords = allWords;
-                else {
+                if (drawCount === 'all_seq') {
+                    practiceWords = allWords;
+                } else if (drawCount === 'all_shuffle') {
+                    practiceWords = allWords.sort(() => Math.random() - 0.5);
+                } else {
                     allWords.sort(() => Math.random() - 0.5);
                     practiceWords = allWords.slice(0, parseInt(drawCount));
                 }
 
                 if (practiceWords.length === 0) throw new Error("無單字");
-                
-                currentIndex = 0;
-                switchView('practiceArea');
-                renderCard();
-            } catch (error) {
-                alert("讀取單字表失敗！請確認 CSV 檔案是否存在。");
-                document.getElementById('loadingOverlay').style.display = 'none';
-            }
+                currentIndex = 0; switchView('practiceArea'); renderCard();
+            } catch (error) { alert("讀取單字表失敗！"); document.getElementById('loadingOverlay').style.display = 'none'; }
         }
 
-        function handleAreaClick(event) {
-            if (event.target.closest('button') || event.target.closest('a') || event.target.closest('input')) return;
-            
-            if (document.getElementById('answerSection').style.display === 'none') {
-                revealAnswer();
-            } else {
-                nextWord();
-            }
-        }
+        function handleAreaClick(event) { if (event.target.closest('button') || event.target.closest('a') || event.target.closest('input')) return; if (document.getElementById('answerSection').style.display === 'none') { revealAnswer(); } else { nextWord(); } }
 
         function setupKeyboardShortcuts() {
             document.addEventListener('keydown', function(event) {
                 const practiceCard = document.getElementById('practiceArea');
                 if (!practiceCard.classList.contains('active-card')) return;
-
-                if (["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.code)) {
-                    event.preventDefault();
-                }
-
+                if (["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(event.code)) { event.preventDefault(); }
                 switch(event.code) {
-                    case 'ArrowRight':
-                    case 'Space':
-                    case 'Enter':
-                        if (document.getElementById('answerSection').style.display === 'none') {
-                            revealAnswer();
-                        } else {
-                            nextWord();
-                        }
+                    case 'ArrowRight': case 'Space': case 'Enter':
+                        if (document.getElementById('answerSection').style.display === 'none') { revealAnswer(); } else { nextWord(); }
                         break;
-                    case 'ArrowLeft':
-                        prevWord();
-                        break;
-                    case 'ArrowUp':
-                        playAudio();
-                        break;
-                    case 'ArrowDown':
-                        toggleBookmark();
-                        break;
+                    case 'ArrowLeft': prevWord(); break;
+                    case 'ArrowUp': playAudio(); break;
+                    case 'ArrowDown': toggleBookmark(); break;
                 }
             });
         }
 
         function renderCard() {
             const word = practiceWords[currentIndex];
-            document.getElementById('wordEn').textContent = word['英文'] || 'Error';
+            const currentWordText = word['英文'] || 'Error';
+            document.getElementById('wordEn').textContent = currentWordText;
             document.getElementById('wordPos').textContent = word['詞性'] || '';
             document.getElementById('wordZh').textContent = word['中文'] || '無資料';
-
             document.getElementById('answerSection').style.display = 'none';
             document.getElementById('revealBtn').style.display = 'block';
             document.getElementById('nextBtn').style.display = 'none';
             document.getElementById('prevBtn').disabled = (currentIndex === 0);
-            
             updateBookmarkUI();
 
-            const img = document.getElementById('wordImg');
-            const container = document.getElementById('imageContainer');
+            const img = document.getElementById('wordImg'), container = document.getElementById('imageContainer'), status = document.getElementById('imgStatus'), wiki = document.getElementById('wikiLink');
+            container.style.display = 'flex'; img.style.opacity = '0'; img.src = ''; status.style.display = 'block'; wiki.style.display = 'none';
+
+            if (currentImageFetch) currentImageFetch.abort();
+            currentImageFetch = new AbortController();
+
+            const processedWord = currentWordText.charAt(0).toUpperCase() + currentWordText.slice(1).toLowerCase();
+            const wikiUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(processedWord)}&prop=pageimages&format=json&pithumbsize=600&redirects=1&origin=*`;
             
-            // 每次載入新單字前，先確保容器有顯示出來
-            container.style.display = 'flex';
-            img.style.opacity = '0';
-            img.src = ''; 
-            document.getElementById('imgStatus').style.display = 'block';
-            document.getElementById('wikiLink').style.display = 'none';
-            
-            const currentWord = word['英文']; // 記錄當下單字
-            const wikiUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(currentWord)}&prop=pageimages&format=json&pithumbsize=600&origin=*`;
-            
-            fetch(wikiUrl).then(res => res.json()).then(data => {
-                // 如果已經切換到下一個單字，就丟棄這次的結果
-                if (practiceWords[currentIndex]['英文'] !== currentWord) return;
-                
-                const pages = data.query?.pages;
-                const pageId = pages ? Object.keys(pages)[0] : "-1";
-                
+            fetch(wikiUrl, { signal: currentImageFetch.signal }).then(res => res.json()).then(data => {
+                if (practiceWords[currentIndex]['英文'] !== currentWordText) return;
+                const pages = data.query?.pages, pageId = pages ? Object.keys(pages)[0] : "-1";
                 if (pageId !== "-1" && pages[pageId].thumbnail) {
                     img.src = pages[pageId].thumbnail.source;
                     img.onload = () => {
-                        if (practiceWords[currentIndex]['英文'] !== currentWord) return;
-                        img.style.opacity = '1';
-                        document.getElementById('imgStatus').style.display = 'none';
-                        document.getElementById('wikiLink').href = `https://en.wikipedia.org/wiki/${encodeURIComponent(currentWord)}`;
-                        document.getElementById('wikiLink').style.display = 'inline-flex';
+                        if (practiceWords[currentIndex]['英文'] !== currentWordText) return;
+                        img.style.opacity = '1'; status.style.display = 'none';
+                        wiki.href = `https://en.wikipedia.org/wiki/${encodeURIComponent(pages[pageId].title)}`; wiki.style.display = 'inline-flex';
                     };
-                } else {
-                    container.style.display = 'none'; // 沒找到圖片就整個隱藏
-                }
-            }).catch(() => {
-                if (practiceWords[currentIndex]['英文'] === currentWord) {
-                    container.style.display = 'none';
-                }
-            });
+                } else { container.style.display = 'none'; }
+            }).catch(() => { if (practiceWords[currentIndex]['英文'] === currentWordText) container.style.display = 'none'; });
 
             const cur = currentIndex + 1, total = practiceWords.length;
             document.getElementById('progressCount').textContent = `${cur} / ${total}`;
             document.getElementById('progressBar').style.width = `${(cur/total)*100}%`;
-            
-            playAudio(word['英文']);
+            playAudio(currentWordText);
         }
 
-        function revealAnswer() {
-            document.getElementById('answerSection').style.display = 'block';
-            document.getElementById('revealBtn').style.display = 'none';
-            document.getElementById('nextBtn').style.display = 'block';
-            document.getElementById('nextBtn').innerHTML = (currentIndex === practiceWords.length - 1) ? '完成練習 <i class="fa-solid fa-check"></i>' : '下一個 <i class="fa-solid fa-arrow-right"></i>';
-        }
-
+        function revealAnswer() { document.getElementById('answerSection').style.display = 'block'; document.getElementById('revealBtn').style.display = 'none'; document.getElementById('nextBtn').style.display = 'block'; document.getElementById('nextBtn').innerHTML = (currentIndex === practiceWords.length - 1) ? '完成練習 <i class="fa-solid fa-check"></i>' : '下一個 <i class="fa-solid fa-arrow-right"></i>'; }
         function prevWord() { if (currentIndex > 0) { currentIndex--; renderCard(); } }
-        function nextWord() {
-            if (currentIndex < practiceWords.length - 1) { currentIndex++; renderCard(); }
-            else showFinish();
-        }
-
-        function toggleBookmark() {
-            const wordObj = practiceWords[currentIndex];
-            const wordEn = wordObj['英文'];
-            const index = bookmarks.findIndex(b => b['英文'] === wordEn);
-            
-            if (index > -1) bookmarks.splice(index, 1);
-            else bookmarks.push({ '英文': wordEn, '中文': wordObj['中文'], '詞性': wordObj['詞性'] });
-            
-            localStorage.setItem('vocab_bookmarks_v2', JSON.stringify(bookmarks));
-            updateBookmarkUI();
-        }
-
-        function updateBookmarkUI() {
-            const wordEn = practiceWords[currentIndex]['英文'];
-            const btn = document.getElementById('bookmarkBtn');
-            if (bookmarks.some(b => b['英文'] === wordEn)) {
-                btn.innerHTML = '<i class="fa-solid fa-star" style="color:#d97706;"></i> 已收藏';
-                btn.classList.add('bookmarked');
-            } else {
-                btn.innerHTML = '<i class="fa-regular fa-star"></i> 收藏';
-                btn.classList.remove('bookmarked');
-            }
-        }
-
-        function openBookmarksPage() {
-            switchView('bookmarkArea');
-            const container = document.getElementById('bookmarkListContainer');
-            const practiceBtn = document.getElementById('practiceBookmarksBtn');
-
-            if (bookmarks.length === 0) {
-                container.innerHTML = `<div style="text-align:center; padding: 40px 0; color:#94a3b8;">
-                    <i class="fa-solid fa-box-open" style="font-size:40px; margin-bottom:10px;"></i><br>目前還沒有收藏單字喔！
-                </div>`;
-                practiceBtn.style.display = 'none';
-                return;
-            }
-
-            practiceBtn.style.display = 'block';
-            container.innerHTML = bookmarks.map((b, index) => `
-                <div class="bookmark-item">
-                    <div>
-                        <div class="bm-word">${b['英文']} <span style="font-size:12px; color:#94a3b8; font-weight:normal;">${b['詞性'] || ''}</span></div>
-                        <div class="bm-zh">${b['中文']}</div>
-                    </div>
-                    <div class="bm-actions">
-                        <button class="bm-btn" onclick="playAudio('${b['英文'].replace(/'/g, "\\'")}')"><i class="fa-solid fa-volume-high"></i></button>
-                        <button class="bm-btn delete" onclick="removeBookmarkFromList(${index})"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                </div>
-            `).reverse().join(''); 
-        }
-
-        function removeBookmarkFromList(index) {
-            const realIndex = bookmarks.length - 1 - index;
-            bookmarks.splice(realIndex, 1);
-            localStorage.setItem('vocab_bookmarks_v2', JSON.stringify(bookmarks));
-            openBookmarksPage(); 
-        }
-
-        function startBookmarkPractice() {
-            if (bookmarks.length === 0) return;
-            practiceWords = [...bookmarks].sort(() => Math.random() - 0.5);
-            currentIndex = 0;
-            switchView('practiceArea');
-            renderCard();
-        }
-
-        function playAudio(text = null) {
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-                const word = text || document.getElementById('wordEn').textContent;
-                const u = new SpeechSynthesisUtterance(word);
-                u.lang = 'en-US'; u.rate = 0.9;
-                window.speechSynthesis.speak(u);
-            }
-        }
-
-        function showFinish() {
-            switchView('finishScreen');
-            const wordWithZh = practiceWords.map(w => `${w['英文']} (${w['中文']})`).join(', ');
-            document.getElementById('aiPromptBox').textContent = `我剛練習完這 ${practiceWords.length} 個英文單字：\n[${wordWithZh}]。\n請提供一些幽默的諧音或記憶口訣幫助我長期記憶。`;
-        }
-
-        function copyAndOpenAI() {
-            const prompt = document.getElementById('aiPromptBox').textContent;
-            navigator.clipboard.writeText(prompt);
-            window.open(`https://chatgpt.com/?q=${encodeURIComponent(prompt)}`, '_blank');
-        }
+        function nextWord() { if (currentIndex < practiceWords.length - 1) { currentIndex++; renderCard(); } else showFinish(); }
+        function toggleBookmark() { const wordObj = practiceWords[currentIndex], wordEn = wordObj['英文'], index = bookmarks.findIndex(b => b['英文'] === wordEn); if (index > -1) bookmarks.splice(index, 1); else bookmarks.push({ '英文': wordEn, '中文': wordObj['中文'], '詞性': wordObj['詞性'] }); localStorage.setItem('vocab_bookmarks_v2', JSON.stringify(bookmarks)); updateBookmarkUI(); }
+        function updateBookmarkUI() { const btn = document.getElementById('bookmarkBtn'); if (bookmarks.some(b => b['英文'] === practiceWords[currentIndex]['英文'])) { btn.innerHTML = '<i class="fa-solid fa-star" style="color:#d97706;"></i> 已收藏'; btn.classList.add('bookmarked'); } else { btn.innerHTML = '<i class="fa-regular fa-star"></i> 收藏'; btn.classList.remove('bookmarked'); } }
+        function openBookmarksPage() { switchView('bookmarkArea'); const container = document.getElementById('bookmarkListContainer'), practiceBtn = document.getElementById('practiceBookmarksBtn'); if (bookmarks.length === 0) { container.innerHTML = `<div style="text-align:center; padding: 40px 0; color:#94a3b8;">目前還沒有收藏單字喔！</div>`; practiceBtn.style.display = 'none'; return; } practiceBtn.style.display = 'block'; container.innerHTML = bookmarks.map((b, index) => `<div class="bookmark-item"><div><div class="bm-word">${b['英文']} <span style="font-size:12px; color:#94a3b8;">${b['詞性'] || ''}</span></div><div class="bm-zh">${b['中文']}</div></div><div class="bm-actions"><button class="bm-btn" onclick="playAudio('${b['英文'].replace(/'/g, "\\'")}')"><i class="fa-solid fa-volume-high"></i></button><button class="bm-btn delete" onclick="removeBookmarkFromList(${index})"><i class="fa-solid fa-trash"></i></button></div></div>`).reverse().join(''); }
+        function removeBookmarkFromList(index) { bookmarks.splice(bookmarks.length - 1 - index, 1); localStorage.setItem('vocab_bookmarks_v2', JSON.stringify(bookmarks)); openBookmarksPage(); }
+        function startBookmarkPractice() { if (bookmarks.length === 0) return; practiceWords = [...bookmarks].sort(() => Math.random() - 0.5); currentIndex = 0; switchView('practiceArea'); renderCard(); }
+        function playAudio(text = null) { if ('speechSynthesis' in window) { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(text || document.getElementById('wordEn').textContent); u.lang = 'en-US'; u.rate = 0.9; window.speechSynthesis.speak(u); } }
+        function showFinish() { switchView('finishScreen'); const wordWithZh = practiceWords.map(w => `${w['英文']} (${w['中文']})`).join(', '); document.getElementById('aiPromptBox').textContent = `我剛練習完這 ${practiceWords.length} 個英文單字：\n[${wordWithZh}]。\n請提供一些幽默的諧音或記憶口訣幫助我長期記憶。`; }
+        function copyAndOpenAI() { const prompt = document.getElementById('aiPromptBox').textContent; navigator.clipboard.writeText(prompt); window.open(`https://chatgpt.com/?q=${encodeURIComponent(prompt)}`, '_blank'); }
     </script>
 </body>
 </html>
