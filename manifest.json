@@ -1,0 +1,17 @@
+{
+  "name": "極致單字卡",
+  "short_name": "單字卡",
+  "description": "支援發音與圖片的專屬單字練功房",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#f3f4f6",
+  "theme_color": "#4F46E5",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/3534/3534033.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
