@@ -22,5 +22,9 @@
   {
     "name": "Ch6 Accelerometer & Gyroscope  單字表",
     "url": "data/Ch6 Accelerometer & Gyroscope .csv"
+  },
+  {
+    "name": "Ch7 Knowledge Management 單字表",
+    "url": "data/Ch7 Knowledge Management.csv"
   }
 ]
